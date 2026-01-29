@@ -7,7 +7,6 @@ import {
   LayoutDashboard,
   User,
   Receipt,
-  Calendar,
   Settings,
   LogOut,
   Menu,
@@ -35,11 +34,6 @@ const navItems: NavItem[] = [
     icon: CreditCard,
   },
   { name: "Profile", href: "/user-dashboard/profile", icon: User },
-  {
-    name: "Investor Brief",
-    href: "/user-dashboard/investor-brief",
-    icon: Receipt,
-  },
   { name: "Settings", href: "/user-dashboard/settings", icon: Settings },
   {
     name: "Help & Support",

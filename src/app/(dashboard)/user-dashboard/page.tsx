@@ -52,11 +52,11 @@ export default function UserDashboard() {
           return (
             <div
               key={index}
-              className="bg-[#111111] border border-[#D4AF37]/20 rounded-xl p-6 hover:border-[#D4AF37]/40 transition-all"
+              className="bg-[#111111] border border-primary/20 rounded-xl p-6 hover:border-primary/40 transition-all"
             >
               <div className="flex items-center justify-between mb-4">
-                <div className="w-12 h-12 rounded-lg bg-[#D4AF37]/10 flex items-center justify-center">
-                  <Icon className="w-6 h-6 text-[#D4AF37]" />
+                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Icon className="w-6 h-6 text-primary" />
                 </div>
                 <span
                   className={`text-sm font-medium ${
@@ -78,16 +78,16 @@ export default function UserDashboard() {
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-[#111111] border border-[#D4AF37]/20 rounded-xl p-6">
+      <div className="bg-[#111111] border border-primary/20 rounded-xl p-6">
         <h2 className="text-xl font-semibold text-white mb-4">Quick Actions</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <button className="px-6 py-3 bg-[#D4AF37] text-black font-medium rounded-lg hover:bg-[#E4C77D] transition-colors">
+          <button className="px-6 py-3 bg-primary text-black font-medium rounded-lg hover:bg-[#E4C77D] transition-colors">
             New Investment
           </button>
-          <button className="px-6 py-3 bg-[#1A1A1A] text-white font-medium rounded-lg border border-[#D4AF37]/20 hover:border-[#D4AF37] transition-colors">
+          <button className="px-6 py-3 bg-[#1A1A1A] text-white font-medium rounded-lg border border-primary/20 hover:border-primary transition-colors">
             View Reports
           </button>
-          <button className="px-6 py-3 bg-[#1A1A1A] text-white font-medium rounded-lg border border-[#D4AF37]/20 hover:border-[#D4AF37] transition-colors">
+          <button className="px-6 py-3 bg-[#1A1A1A] text-white font-medium rounded-lg border border-primary/20 hover:border-primary transition-colors">
             Schedule Meeting
           </button>
         </div>

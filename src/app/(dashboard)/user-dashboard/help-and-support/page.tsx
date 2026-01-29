@@ -1,5 +1,8 @@
-import React from "react";
+import React from 'react';
 
-export default function Help() {
-  return <div>Help</div>;
+export default function HelpAndSupport() {
+  return (
+    <div className="p-6 lg:p-8">
+    </div>
+  );
 }

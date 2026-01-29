@@ -16,7 +16,7 @@ export function Navbar() {
   ];
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-[#0A0A0A]/95 backdrop-blur-md border-b border-[#D4AF37]/10">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-[#0A0A0A]/95 backdrop-blur-md border-b border-primary/10">
       <Container>
         <div className="flex items-center justify-between">
           <div className={`flex items-center gap-3`}>
@@ -36,8 +36,8 @@ export function Navbar() {
                 href={link.path}
                 className={`text-sm transition-colors ${
                   pathname === link.path
-                    ? "text-[#D4AF37]"
-                    : "text-gray-300 hover:text-[#D4AF37]"
+                    ? "text-primary"
+                    : "text-gray-300 hover:text-primary"
                 }`}
               >
                 {link.name}
