@@ -1,96 +1,107 @@
-import React from 'react';
-import { TrendingUp, DollarSign, Calendar, Users } from 'lucide-react';
+import React from "react";
+import { Briefcase, Package, CreditCard, User } from "lucide-react";
 
 export default function UserDashboard() {
   const stats = [
+    { label: "Status", value: "Active Member", dot: true },
+    { label: "Plan", value: "Premium Access", dot: true },
+    { label: "Requests", value: "3 Active" },
+    { label: "Interests", value: "12 Saved" },
+  ];
+
+  const actions = [
     {
-      title: 'Total Investment',
-      value: '$125,000',
-      change: '+12.5%',
-      icon: DollarSign,
-      trend: 'up',
+      title: "Requests",
+      description: "Browse and post investment requirements.",
+      icon: Briefcase,
     },
     {
-      title: 'Active Projects',
-      value: '8',
-      change: '+2',
-      icon: TrendingUp,
-      trend: 'up',
+      title: "Stock",
+      description: "View curated property listings.",
+      icon: Package,
     },
     {
-      title: 'Upcoming Events',
-      value: '3',
-      change: 'This week',
-      icon: Calendar,
-      trend: 'neutral',
+      title: "Subscription",
+      description: "Manage your membership plan.",
+      icon: CreditCard,
     },
     {
-      title: 'Network',
-      value: '156',
-      change: '+23',
-      icon: Users,
-      trend: 'up',
+      title: "Profile",
+      description: "Update your role and preferences.",
+      icon: User,
     },
   ];
 
   return (
-    <div className="p-6 lg:p-8">
-      {/* Welcome Section */}
-      <div className="mb-8">
-        <h1 className="text-3xl lg:text-4xl font-bold text-white mb-2">
-          Welcome back, John!
+    <div className="min-h-screen bg-black text-white px-6 lg:px-10 py-8">
+      {/* Header */}
+      <div className="mb-10">
+        <h1 className="text-xl sm:text-3xl lg:text-4xl font-semibold text-primary mb-2">
+          Welcome, John Doe
         </h1>
-        <p className="text-gray-400">
-          Here&apos;s what&apos;s happening with your investments today.
+        <p className="text-xs sm:text-base text-gray-400">
+          Your premium gateway to exclusive property opportunities.
         </p>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {stats.map((stat, index) => {
-          const Icon = stat.icon;
-          return (
-            <div
-              key={index}
-              className="bg-[#111111] border border-primary/20 rounded-xl p-6 hover:border-primary/40 transition-all"
-            >
-              <div className="flex items-center justify-between mb-4">
-                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <Icon className="w-6 h-6 text-primary" />
-                </div>
-                <span
-                  className={`text-sm font-medium ${
-                    stat.trend === 'up'
-                      ? 'text-green-500'
-                      : stat.trend === 'down'
-                      ? 'text-red-500'
-                      : 'text-gray-400'
-                  }`}
-                >
-                  {stat.change}
-                </span>
-              </div>
-              <h3 className="text-gray-400 text-sm mb-1">{stat.title}</h3>
-              <p className="text-2xl font-bold text-white">{stat.value}</p>
+      {/* Status Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 xl:gap-6 mb-12">
+        {stats.map((stat, i) => (
+          <div
+            key={i}
+            className="bg-[#0D0D0D] border border-[#E6C97A]/20 rounded-xl px-6 py-5"
+          >
+            <p className="text-xs uppercase tracking-wide text-gray-500 mb-2">
+              {stat.label}
+            </p>
+            <div className="flex items-center gap-2">
+              <p className="xl:text-lg font-medium">{stat.value}</p>
+              {stat.dot && (
+                <span className="w-2 h-2 rounded-full bg-green-500" />
+              )}
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-[#111111] border border-primary/20 rounded-xl p-6">
-        <h2 className="text-xl font-semibold text-white mb-4">Quick Actions</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <button className="px-6 py-3 bg-primary text-black font-medium rounded-lg hover:bg-[#E4C77D] transition-colors">
-            New Investment
-          </button>
-          <button className="px-6 py-3 bg-[#1A1A1A] text-white font-medium rounded-lg border border-primary/20 hover:border-primary transition-colors">
-            View Reports
-          </button>
-          <button className="px-6 py-3 bg-[#1A1A1A] text-white font-medium rounded-lg border border-primary/20 hover:border-primary transition-colors">
-            Schedule Meeting
-          </button>
+      <div className="mb-12">
+        <h2 className="text-xl font-semibold mb-6">Quick Actions</h2>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {actions.map((action, i) => {
+            const Icon = action.icon;
+            return (
+              <div
+                key={i}
+                className="bg-[#111111] border border-[#D4AF3733] rounded-xl p-6 hover:border-[#E6C97A]/50 transition-all cursor-pointer"
+              >
+                <div className="w-10 h-10 rounded-full bg-[#D4AF371A] flex items-center justify-center mb-4">
+                  <Icon className="w-5 h-5 text-primary" />
+                </div>
+                <h3 className="text-lg font-medium mb-1">{action.title}</h3>
+                <p className="text-xs sm:text-sm text-[#99A1AF] mb-4">
+                  {action.description}
+                </p>
+                <span className="text-sm text-primary">Open →</span>
+              </div>
+            );
+          })}
         </div>
+      </div>
+
+      {/* About Section */}
+      <div className="bg-[#0D0D0D] border border-[#D4AF3733] rounded-xl p-6 max-w-4xl">
+        <h3 className="text-lg font-medium text-primary mb-3">
+          About Investors Hub
+        </h3>
+        <p className="text-xs sm:text-sm text-[#99A1AF] leading-relaxed">
+          Investors Hub is a discreet, professional platform connecting
+          high-net-worth individuals with premium property opportunities. All
+          interactions are monitored to ensure privacy and quality. No direct
+          contact details are shared until interest is confirmed by our
+          administrators.
+        </p>
       </div>
     </div>
   );

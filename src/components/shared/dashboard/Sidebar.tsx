@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   User,
-  Receipt,
   Settings,
   LogOut,
   Menu,
@@ -58,12 +57,12 @@ export function Sidebar() {
       {/* Mobile Menu Button */}
       <button
         onClick={() => setIsMobileOpen(!isMobileOpen)}
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-[#111111] border border-primary/20 rounded-lg text-white hover:bg-[#1A1A1A] transition-colors"
+        className="lg:hidden fixed top-4 left-1 sm:left-4 z-50 p-2 bg-[#111111] border border-primary/20 rounded-lg text-white hover:bg-[#1A1A1A] transition-colors"
       >
         {isMobileOpen ? (
-          <X className="w-6 h-6" />
+          <X className="size-5" />
         ) : (
-          <Menu className="w-6 h-6" />
+          <Menu className="size-4 sm:size-6" />
         )}
       </button>
 
@@ -146,7 +145,7 @@ export function Sidebar() {
             <button
               onClick={handleLogout}
               className={`
-                w-full flex items-center gap-3 px-4 py-3 rounded-lg
+                w-full flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer
                 text-gray-300 hover:bg-red-500/10 hover:text-red-500 transition-all
                 ${isCollapsed ? "justify-center" : ""}
               `}

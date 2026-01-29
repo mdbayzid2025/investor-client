@@ -27,11 +27,13 @@ export function Topbar() {
   const breadcrumbs = getBreadcrumb();
 
   return (
-    <div className="sticky top-0 z-10 flex items-center justify-between bg-[#0A0A0A]/95 backdrop-blur-sm border-b border-primary/20 px-6 lg:px-8 py-4">
+    <div className="sticky top-0 z-10 flex flex-col gap-2 sm:flex-row items-center justify-between bg-[#0A0A0A]/95 backdrop-blur-sm border-b border-primary/20 px-6 sm:px-20 lg:px-8 py-4">
       <div className="flex items-center gap-2 text-sm">
         {breadcrumbs.map((crumb, index) => (
-          <div key={index} className="flex items-center">
-            {index > 0 && <ChevronRight className="w-4 h-4 text-gray-500 mx-1" />}
+          <div key={index} className="flex items-center text-xs sm:text-base">
+            {index > 0 && (
+              <ChevronRight className="w-4 h-4 text-gray-500 mx-1" />
+            )}
             <span
               className={
                 index === breadcrumbs.length - 1
@@ -52,7 +54,7 @@ export function Topbar() {
         >
           Go to website
         </Link>
-        
+
         <Link
           href="/user-dashboard/notifications"
           className="text-white relative hover:text-primary transition-colors"
