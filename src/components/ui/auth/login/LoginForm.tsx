@@ -22,7 +22,7 @@ export function LoginForm() {
     try {
           
       console.log('Login successful:', { email });                      
-      router.replace('/');
+      router.replace('/user-dashboard');
     } catch (err) {
       setError('Invalid email or password. Please try again.');
       console.error('Login error:', err);
@@ -97,7 +97,7 @@ export function LoginForm() {
           </form>
           
           <div className="mt-6 text-center text-sm text-gray-400">
-            Don't have an account?{' '}
+            Don&apos;t have an account?{' '}
             <Link href="/signup" className="text-[#D4AF37] hover:text-[#E4C77D] font-medium">
               Sign up
             </Link>

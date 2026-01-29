@@ -1,19 +1,18 @@
-'use client'
-import { Button } from '@/components/ui/button';
-import Image from 'next/image';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import React from 'react';
-import Container from '../Container/Container';
+"use client";
+import { Button } from "@/components/ui/button";
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import React from "react";
+import Container from "../Container/Container";
 
 export function Navbar() {
-
-  const pathname = usePathname()
+  const pathname = usePathname();
   const navLinks = [
-    { name: 'Home', path: '/' },
-    { name: 'How It Works', path: '/how-it-works' },
-    { name: 'About', path: '/about' },
-    { name: 'Pricing', path: '/pricing' },
+    { name: "Home", path: "/" },
+    { name: "How It Works", path: "/how-it-works" },
+    { name: "About", path: "/about" },
+    { name: "Pricing", path: "/pricing" },
   ];
 
   return (
@@ -25,7 +24,6 @@ export function Navbar() {
               height={50}
               width={150}
               src="/logo.png"
-
               alt="Investors Hub"
               className="h-20 object-cover overflow-visible"
             />
@@ -36,23 +34,31 @@ export function Navbar() {
               <Link
                 key={link.path}
                 href={link.path}
-                className={`text-sm transition-colors ${pathname === link.path
-                  ? 'text-[#D4AF37]'
-                  : 'text-gray-300 hover:text-[#D4AF37]'
-                  }`}
+                className={`text-sm transition-colors ${
+                  pathname === link.path
+                    ? "text-[#D4AF37]"
+                    : "text-gray-300 hover:text-[#D4AF37]"
+                }`}
               >
                 {link.name}
               </Link>
             ))}
           </div>
 
-          <div className="flex items-center gap-4">            
-            <Link href="/login" ><Button size="lg" variant="link" className='text-white'>
-              Login
-            </Button></Link>
-            <Link href="/signup">  <Button>
-              Get Started
-            </Button></Link>
+          <div className="flex items-center gap-4">
+            <Link href="/login">
+              <Button
+                size="lg"
+                variant="link"
+                className="text-white cursor-pointer"
+              >
+                Login
+              </Button>
+            </Link>
+            <Link href="/signup">
+              {" "}
+              <Button>Get Started</Button>
+            </Link>
           </div>
         </div>
       </Container>
