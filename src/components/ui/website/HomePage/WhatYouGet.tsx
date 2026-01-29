@@ -3,8 +3,8 @@ import { Shield, Lock, MessageSquare, FileText, TrendingUp, CheckCircle, Eye, Us
 
 const WhatYouGet = () => {
     return (
-        <section className="py-24 bg-gradient-to-b from-[#0A0A0A] to-black">
-            <div className="max-w-7xl mx-auto px-6">
+        <section className="py10 lg:py-24 bg-gradient-to-b from-[#0A0A0A] to-black">
+            <div className="">
                 <div className="text-center mb-16">
                     <h2 className="text-4xl md:text-5xl font-serif text-white mb-4">
                         What You Get for R99/Month
