@@ -4,12 +4,12 @@ import React from 'react'
 
 const MonthlyInvestorBrief = () => {
   return (
-    <section className="py-24 bg-[#0A0A0A]">      
-        <div className="grid grid-cols-2 gap-5 items-center">
-        <div className="bg-gradient-to-br from-[#111111] to-[#0A0A0A] border border-[#D4AF37]/30 rounded-2xl p-12">
+    <section className="py-10 md:py-24 bg-[#0A0A0A]">      
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-stretch">
+        <div className="">
           <div className="text-center mb-8">
             
-            <h2 className="text-4xl text-start font-serif text-white mb-4">
+            <h2 className="text-4xl text-start font-serif text-white">
               Monthly <span className='text-primary'>Investor Brief</span> 
             </h2>
             <p className="text-xl text-start text-gray-400">
@@ -17,7 +17,7 @@ const MonthlyInvestorBrief = () => {
             </p>
           </div>
 
-          <div className="space-y-6">
+          <div className="space-y-2">
             <div className="flex items-start gap-4">
               <div className="w-8 h-8 rounded-full bg-[#D4AF37]/20 flex items-center justify-center flex-shrink-0">
                 <span className="text-[#D4AF37] font-medium">1</span>
@@ -50,8 +50,8 @@ const MonthlyInvestorBrief = () => {
           </div>
 
         </div>
-        <div className="">
-          <Image src="/investorBrief.png" height={700} width={500} className='aspect-ration-5/5 h-full w-full object-cover' alt='growth' />
+        <div className="relative h-full">
+          <Image src="/investorBrief.png" height={700} width={550} className='w-full h-full object-cover rounded-2xl' alt='growth' />
         </div>
         </div>              
     </section>

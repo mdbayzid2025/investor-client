@@ -1,8 +1,9 @@
 import React from 'react'
+import OTPVerifyForm from './OTPVerifyForm'
 
 const VerifyOTP = () => {
   return (
-    <div>VerifyOTP</div>
+    <div><OTPVerifyForm /></div>
   )
 }
 

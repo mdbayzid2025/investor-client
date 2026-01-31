@@ -1,159 +1,237 @@
-import React, { useState } from 'react';
+'use client'
+import { useState, useEffect, useRef, FormEvent, ChangeEvent, KeyboardEvent } from 'react';
+import { ArrowLeft, ShieldCheck, RefreshCcw, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useRouter } from 'next/navigation';
 
-import { Mail, ArrowLeft, CheckCircle } from 'lucide-react';
-import Link from 'next/link';
-import { Button } from '../../button';
-
-export function OTPVerifyForm() {
-  const [email, setEmail] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
+export default function OTPVerifyForm() {
+  const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const [timeLeft, setTimeLeft] = useState(180);
+  const [isLoading, setIsLoading] = useState(false);  
   const [error, setError] = useState('');
-  
-  const handleSubmit = async (e: React.FormEvent) => {
+  const [isExpired, setIsExpired] = useState(false);
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+
+  const router = useRouter();
+
+  useEffect(() => {
+    if (timeLeft <= 0) {
+      setIsExpired(true);
+      return;
+    }
+
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => prev - 1);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [timeLeft]);
+
+  const formatTime = (seconds: number): string => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const handleChange = (index: number, value: string): void => {
+    if (!/^\d*$/.test(value)) return;
+
+    const newOtp = [...otp];
+    newOtp[index] = value.substring(value.length - 1);
+    setOtp(newOtp);
+
+    if (value && index < 5) {
+      inputRefs.current[index + 1]?.focus();
+    }
+  };
+
+  const handleKeyDown = (index: number, e: KeyboardEvent<HTMLInputElement>): void => {
+    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+      inputRefs.current[index - 1]?.focus();
+    }
+  };
+
+  const handlePaste = (e: React.ClipboardEvent<HTMLDivElement>): void => {
     e.preventDefault();
+    const pasteData = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6).split('');
+
+    if (pasteData.length > 0) {
+      const newOtp = [...otp];
+      pasteData.forEach((char: string, i: number) => {
+        if (i < 6) newOtp[i] = char;
+      });
+      setOtp(newOtp);
+
+      const nextIndex = pasteData.length < 6 ? pasteData.length : 5;
+      inputRefs.current[nextIndex]?.focus();
+    }
+  };
+
+  const handleVerify = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
+    e.preventDefault();
+    const code = otp.join('');
+    if (code.length < 6) {
+      setError('Please enter the complete verification code.');
+      return;
+    }
+
     setIsLoading(true);
     setError('');
-    
+router.push("new-password")
     try {
-      // TODO: Replace with actual password reset API call
-      // const response = await fetch('/api/auth/forgot-password', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ email })
-      // });
+      // Api call here
       
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Mock successful request
-      console.log('Password reset email sent to:', email);
-      setIsSuccess(true);
     } catch (err) {
-      setError('An error occurred. Please try again.');
-      console.error('Password reset error:', err);
+      const errorMessage = err instanceof Error ? err.message : 'An error occurred';
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
-  
-  if (isSuccess) {
-    return (
-      <div className="min-h-screen flex items-center justify-center px-6 py-12 bg-gradient-to-br from-black via-[#0A0A0A] to-black">
-        <div className="w-full max-w-md">
-          <div className="text-center mb-8">
-            {/* <Logo className="justify-center mb-8" /> */}
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#D4AF37]/20 mb-6">
-              <CheckCircle className="w-8 h-8 text-[#D4AF37]" />
-            </div>
-            <h1 className="text-4xl font-serif text-white mb-2">Check Your Email</h1>
-            <p className="text-gray-400">We've sent password reset instructions to</p>
-            <p className="text-[#D4AF37] font-medium mt-2">{email}</p>
-          </div>
-          
-          <div className="bg-[#111111] p-8 rounded-xl border border-[#D4AF37]/20">
-            <div className="text-center space-y-4">
-              <p className="text-gray-300 text-sm">
-                If an account exists with this email address, you will receive a password reset link within the next few minutes.
-              </p>
-              
-              <p className="text-gray-400 text-xs">
-                Didn't receive the email? Check your spam folder or try again.
-              </p>
-              
-              {/* Demo Mode - Show Reset Link */}
-              <div className="bg-[#D4AF37]/10 border border-[#D4AF37]/30 rounded-lg p-4 mt-6">
-                <p className="text-[#D4AF37] text-sm font-medium mb-3">
-                  🎯 Demo Mode - Test Reset Password Flow
-                </p>
-                <p className="text-gray-400 text-xs mb-4">
-                  Since this is a demo, click the button below to simulate clicking the reset link from your email.
-                </p>
-                <Link href="/new-password?token=demo-reset-token-12345">
-                  <Button className="w-full">
-                    Open Password Reset Link (Demo)
-                  </Button>
-                </Link>
-              </div>
-              
-              <div className="pt-4 border-t border-[#D4AF37]/10">
-                <Link href="/login">
-                  <Button variant="outline" className="w-full mb-3">
-                    Back to Sign In
-                  </Button>
-                </Link>
-              </div>
-              
-              <button
-                onClick={() => {
-                  setIsSuccess(false);
-                  setEmail('');
-                }}
-                className="text-[#D4AF37] hover:text-[#E4C77D] text-sm transition-colors"
-              >
-                Try Different Email
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-  
+
+  const handleResend = () => {
+    setTimeLeft(180);
+    setIsExpired(false);
+    setOtp(['', '', '', '', '', '']);
+    setError('');
+    setIsLoading(false);
+    setTimeout(() => inputRefs.current[0]?.focus(), 100);
+  };
+
+
   return (
-    <div className="min-h-screen flex items-center justify-center px-6 py-12 bg-gradient-to-br from-black via-[#0A0A0A] to-black">
+    <div className="min-h-screen flex items-center justify-center px-6 py-12 bg-gradient-to-b from-[#0F0F0F] to-black text-white font-sans">
       <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          {/* <Logo className="justify-center mb-8" /> */}
-          <h1 className="text-4xl font-serif text-white mb-2">Reset Password</h1>
-          <p className="text-gray-400">Enter your email to receive reset instructions</p>
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/5 mb-6 border border-primary/20 shadow-[0_0_20px_rgba(212,175,55,0.05)]">
+            <ShieldCheck className="w-8 h-8 text-primary" />
+          </div>
+          <h1 className="text-3xl md:text-4xl font-serif text-white mb-3">Security Verification</h1>
+          <p className="text-gray-400 text-sm md:text-base px-4">
+            We've sent a 6-digit verification code to <br/>
+            <span className="text-primary font-medium">m***@luxuryconcierge.com</span>
+          </p>
         </div>
-        
-        <div className="bg-[#111111] p-8 rounded-xl border border-[#D4AF37]/20">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Email Address
+
+        <div className="bg-[#141414] p-8 rounded-2xl border border-white/5 shadow-2xl relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
+
+          <form onSubmit={handleVerify} className="space-y-8">
+            <div className="space-y-4">
+              <label className="block text-center text-xs uppercase tracking-widest text-gray-500 font-semibold">
+                Enter Verification Code
               </label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-[#1A1A1A] border border-[#D4AF37]/20 rounded-lg px-12 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-[#D4AF37] transition-colors"
-                  placeholder="you@example.com"
-                  required
-                />
+
+              <div className="flex justify-between gap-2 md:gap-3" onPaste={handlePaste}>
+                {otp.map((digit, index) => (
+                  <Input
+                    key={index}
+                    ref={(el:any) => {
+                      if (el) inputRefs.current[index] = el;
+                    }}
+                    type="text"
+                    inputMode="numeric"
+                    autoComplete="one-time-code"
+                    value={digit}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => handleChange(index, e.target.value)}
+                    onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => handleKeyDown(index, e)}
+                    disabled={isExpired || isLoading}
+                    maxLength={1}
+                    className={`w-full h-14 md:h-16 text-center text-2xl font-bold ${
+                      isExpired ? 'opacity-50' : ''
+                    }`}
+                  />
+                ))}
               </div>
             </div>
-            
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? 'Sending Instructions...' : 'Send Reset Link'}
-            </Button>
-            
-            {error && (
-              <div className="text-sm text-red-500 text-center">
+
+            {isExpired ? (
+              <div className="space-y-4 animate-in slide-in-from-top-2 duration-300">
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>This code has expired</AlertDescription>
+                </Alert>
+                <Button variant="outline" onClick={handleResend} className="w-full">
+                  <RefreshCcw className="w-4 h-4 mr-2" />
+                  Resend New Code
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={isLoading || otp.includes('')}
+                >
+                  {isLoading ? (
+                    <span className="flex items-center">
+                      <RefreshCcw className="w-4 h-4 mr-2 animate-spin" />
+                      Verifying...
+                    </span>
+                  ) : (
+                    'Verify Code'
+                  )}
+                </Button>
+
+                <div className="flex items-center justify-between text-xs md:text-sm">
+                  <div className="flex items-center text-gray-500">
+                    Code expires in:
+                    <span className={`ml-2 font-mono font-bold ${timeLeft < 30 ? 'text-red-400 animate-pulse' : 'text-primary'}`}>
+                      {formatTime(timeLeft)}
+                    </span>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={handleResend}
+                    disabled={timeLeft > 120}
+                    className="text-primary hover:text-[#E4C77D] text-xs md:text-sm p-0 h-auto"
+                  >
+                    Resend
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {error && !isExpired && (
+              <div className="text-xs text-red-500 text-center animate-shake">
                 {error}
               </div>
             )}
           </form>
-          
-          <div className="mt-6 text-center">
-            <Link 
-              href="/login" 
-              className="inline-flex items-center text-sm text-gray-400 hover:text-[#D4AF37] transition-colors"
+
+          <div className="mt-10 pt-6 border-t border-white/5 text-center">
+            <button
+              onClick={() => window.history.back()}
+              className="inline-flex items-center text-sm text-gray-500 hover:text-primary transition-colors group"
             >
-              <ArrowLeft className="w-4 h-4 mr-2" />
+              <ArrowLeft className="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1" />
               Back to Sign In
-            </Link>
+            </button>
           </div>
         </div>
-        
-        <div className="mt-6 text-center text-xs text-gray-500">
-          <p>For security purposes, password reset links expire after 1 hour.</p>
+
+        <div className="mt-8 text-center">
+          <p className="text-[10px] md:text-xs text-gray-600 uppercase tracking-widest leading-relaxed">
+            Secure Encrypted Session <br/>
+            Ref ID: OTP-{Math.random().toString(36).substring(7).toUpperCase()}
+          </p>
         </div>
       </div>
+
+      <style>{`
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-4px); }
+          75% { transform: translateX(4px); }
+        }
+        .animate-shake {
+          animation: shake 0.2s ease-in-out 0s 2;
+        }
+      `}</style>
     </div>
   );
 }

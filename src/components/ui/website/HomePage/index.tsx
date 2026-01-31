@@ -8,6 +8,7 @@ import MonthlyInvestorBrief from './MonthlyInvestorBrief'
 import TrustAndConfidentiality from './TrustAndConfidentiality'
 import UnLockMarket from './UnLockMarket'
 import Container from '@/components/shared/Container/Container'
+import OffMarketOpportunities from './OffMarketOpportunities'
 
 const HomePage = () => {
   return (
@@ -17,6 +18,7 @@ const HomePage = () => {
         <WhatIsInvestorHub />
         <WhatYouGet />
         <AnonymousInvestorChat />
+        <OffMarketOpportunities />
         <MonthlyInvestorBrief />
         <TrustAndConfidentiality />
         <UnLockMarket />

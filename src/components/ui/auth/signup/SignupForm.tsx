@@ -82,8 +82,8 @@ export function SignupForm() {
   };
   
   return (
-    <div className="min-h-screen flex items-center justify-center px-6 py-12 bg-gradient-to-br from-black via-[#0A0A0A] to-black">
-      <div className="w-full max-w-md">
+    <div className="">
+      <div className="w-full">
         <div className="text-center mb-8">
           {/* <Logo className="justify-center mb-8" /> */}
           <h1 className="text-4xl font-serif text-white mb-2">Join Investors Hub</h1>

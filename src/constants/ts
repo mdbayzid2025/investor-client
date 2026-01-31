@@ -1,21 +1,19 @@
-import { Bricolage_Grotesque } from "next/font/google";
+import { Bricolage_Grotesque, Playfair_Display } from "next/font/google";
 
- const bricolage = Bricolage_Grotesque({
+const bricolage = Bricolage_Grotesque({
   subsets: ["latin"],
   display: "swap",
-  weight: [
-    "200",
-    "300",
-    "400",
-    "500",
-    "600",
-    "700",
-    "800"
-  ],
+  weight: ["200", "300", "400", "500", "600", "700", "800"],
 });
 
-export {bricolage};
+
+
+export { bricolage};
 
 
 // <div className=`mb-5 ${bricolage.className}`>
 // this is how it use by import in componet
+
+
+// Playfair Display
+

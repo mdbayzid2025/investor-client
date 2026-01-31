@@ -5,8 +5,8 @@ import { Button } from '../../button'
 const WhatIsInvestorHub = () => {
 
     return (
-        <section className="py-24 bg-[#0A0A0A] border-t border-[#D4AF37]/10 grid grid-cols-1 md:grid-cols-2 gap-5 items-center">
-            <div className="max-w-4xl mx-auto px-6 text-start">
+        <section className=" py-10 lg:py-24 bg-[#0A0A0A] border-t border-[#D4AF37]/10 grid grid-cols-1 lg:grid-cols-2 gap-5 items-center">
+            <div className="px-6 text-start">
                 <div className="mb-6">
                     <span className="inline-block px-4 py-2 bg-[#D4AF37]/10 border border-[#D4AF37]/30 rounded-full text-[#D4AF37] text-sm font-medium mb-8">
                         About Us
@@ -16,27 +16,19 @@ const WhatIsInvestorHub = () => {
                     What Is <span className='text-primary'>Investors Hub?</span>
                 </h2>
                 <div className="space-y-6 text-lg text-gray-300 leading-relaxed">
-                    <p>
-                        Investors Hub is a <strong className="text-white">paid, private investor platform</strong> that connects
-                        serious property investors and developers with <strong className="text-white">off-market opportunities</strong> that
-                        never reach public listing portals.
+                    <p className='text-justify'>
+                       Investors Hub is a paid, private investment platform exclusively for serious property and business investors. This is not a traditional listing portal it's a discreet network where verified investors access off-market opportunities and connect anonymously.
                     </p>
-                    <p>
-                        This is <strong className="text-[#D4AF37]">not a traditional property portal</strong>. We focus exclusively on
-                        discretion, verified members, and high-value deals that require confidentiality.
-                    </p>
-                    <p className="text-gray-400 text-base italic">
-                        For serious investors who value privacy, early access, and direct connections.
-                    </p>
+                    
                 </div>
-                <div className="md:mt-6 mb-6 flex items-center gap-3">
-                <Button size="xs" className=" whitespace-nowrap  bg-primary/10 border border-primary/30 rounded-full text-primary! hover:text-white!  font-medium mb-8">
+                <div className="md:mt-6 mb-6 mt-3 flex items-center flex-wrap gap-3 ">
+                <Button size="xs" className=" whitespace-nowrap  bg-primary/10 border border-primary/30 rounded-full text-primary! hover:text-white!  font-medium md:mb-8">
                     Off Market Focus
                 </Button>
-                <Button size="xs" className=" whitespace-nowrap  bg-primary/10 border border-primary/30 rounded-full text-primary! hover:text-white! font-medium mb-8">
+                <Button size="xs" className=" whitespace-nowrap  bg-primary/10 border border-primary/30 rounded-full text-primary! hover:text-white! font-medium md:mb-8">
                     Verified Investor  Only
                 </Button>
-                <Button size="xs" className=" whitespace-nowrap  bg-primary/10 border border-primary/30 rounded-full text-primary! hover:text-white! text-sm font-medium mb-8">
+                <Button size="xs" className=" whitespace-nowrap  bg-primary/10 border border-primary/30 rounded-full text-primary! hover:text-white! text-sm font-medium md:mb-8">
                     Complete Discretion
                 </Button>
             </div>

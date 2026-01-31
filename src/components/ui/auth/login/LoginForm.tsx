@@ -32,8 +32,8 @@ export function LoginForm() {
   };
   
   return (
-    <div className="min-h-screen flex items-center justify-center px-6 bg-gradient-to-br from-black via-[#0A0A0A] to-black">
-      <div className="w-full max-w-md">
+    <div className="flex-1">
+      <div className="w-full">
         <div className="text-center mb-8">          
           <h1 className="text-4xl font-serif text-white mb-2">Welcome Back</h1>
           <p className="text-gray-400">Sign in to your account</p>

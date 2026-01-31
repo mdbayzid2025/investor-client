@@ -7,7 +7,7 @@ const TrustAndConfidentiality = () => {
       <div className="max-w-6xl mx-auto px-6">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-serif text-white mb-6">
-            Trust & Confidentiality
+            Trust & <span className='text-primary'>Confidentiality</span>
           </h2>
           <p className="text-xl text-gray-400 max-w-3xl mx-auto">
             Your privacy and security are our highest priorities
@@ -60,17 +60,7 @@ const TrustAndConfidentiality = () => {
               </div>
             </div>
           </div>
-        </div>
-
-        <div className="mt-12 text-center">
-          <div className="inline-block bg-[#D4AF37]/10 border border-[#D4AF37]/30 rounded-xl p-8 max-w-3xl">
-            <p className="text-lg text-gray-300 leading-relaxed">
-              <strong className="text-white">Built for discretion:</strong> Whether you're a high-net-worth
-              investor, corporate seller, or private developer, Investors Hub ensures your
-              information and negotiations remain confidential throughout the entire process.
-            </p>
-          </div>
-        </div>
+        </div>        
       </div>
     </section>
   )

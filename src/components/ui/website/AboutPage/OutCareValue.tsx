@@ -5,7 +5,7 @@ const OutCareValue = () => {
         <section className="py-24 bg-[#0A0A0A]">
             <div className="max-w-6xl mx-auto px-6">
                 <div className="text-center mb-16">
-                    <h2 className="text-3xl md:text-4xl font-serif text-white mb-4">Our Core Values</h2>
+                    <h2 className="text-3xl md:text-4xl font-serif text-white mb-4">Our <span className='text-primary'>Core Values</span></h2>
                     <p className="text-gray-400">The principles that guide every feature we build.</p>
                 </div>
 

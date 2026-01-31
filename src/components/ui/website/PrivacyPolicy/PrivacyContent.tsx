@@ -4,9 +4,9 @@ import React from 'react'
 const PrivacyContent = () => {
     return (
         <div className='mb-14'>
-            <div className="text-center mb-16">
-                <Shield className="w-16 h-16 text-[#D4AF37] mx-auto mb-6" />
-                <h1 className="text-4xl md:text-5xl font-serif text-white mb-6">Privacy Policy</h1>
+            <div className="text-center mb-16 pt-32">
+                
+                <h1 className="text-4xl md:text-5xl font-serif text-white mb-6">Privacy <span className='text-primary'>Policy</span></h1>
                 <p className="text-gray-400 text-lg">
                     Last Updated: January 18, 2026
                 </p>

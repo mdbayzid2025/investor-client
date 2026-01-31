@@ -1,5 +1,6 @@
 import React from 'react'
 import { UserPlus, FileText, MessageSquare, CheckCircle } from 'lucide-react';
+import Container from '@/components/shared/Container/Container';
 
   const steps = [
     {
@@ -26,21 +27,19 @@ import { UserPlus, FileText, MessageSquare, CheckCircle } from 'lucide-react';
 
 const StepSection = () => {
     return (
-        <section className="py-24 bg-[#0A0A0A] relative overflow-hidden">
+        <section className="relative overflow-hidden">
             {/* Decorative ambient glow */}
-            <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none opacity-20">
-                <div className="absolute top-1/4 left-0 w-96 h-96 bg-[#D4AF37] rounded-full blur-[128px] -translate-x-1/2" />
-                <div className="absolute bottom-1/4 right-0 w-96 h-96 bg-[#D4AF37] rounded-full blur-[128px] translate-x-1/2" />
-            </div>
 
-            <div className="max-w-6xl mx-auto px-6 relative z-10">
+
+            <Container>
+            <div className=" relative z-10">
                 <div className="relative">
                     {/* Vertical Connection Line (Desktop) */}
                     <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[#D4AF37]/50 to-transparent -translate-x-1/2" />
 
-                    <div className="space-y-12 md:space-y-24">
+                    <div className="space-y-12 lg:space-y-24">
                         {steps.map((step, index) => (
-                            <div key={index} className={`relative flex flex-col md:flex-row items-center gap-8 md:gap-16 group ${index % 2 !== 0 ? 'md:flex-row-reverse' : ''}`}>
+                            <div key={index} className={`relative flex flex-col-reverse lg:flex-row items-center gap-8 md:gap-16 group ${index % 2 !== 0 ? 'lg:flex-row-reverse' : ''}`}>
 
                                 {/* Content Card */}
                                 <div className={`flex-1 w-full ${index % 2 !== 0 ? 'md:text-left' : 'md:text-right'}`}>
@@ -71,6 +70,7 @@ const StepSection = () => {
                     </div>
                 </div>
             </div>
+            </Container>
         </section>
     )
 }

@@ -3,15 +3,14 @@ import React from 'react'
 
 const AnonymousInvestorChat = () => {
   return (
-       <section className="py-24 bg-[#0A0A0A]">
-        <div className="max-w-6xl mx-auto px-6">
+       <section className="py-24">        
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <div className="inline-block px-4 py-2 bg-[#D4AF37]/10 border border-[#D4AF37]/30 rounded-full text-[#D4AF37] text-sm font-medium mb-6">
                 Key Feature
               </div>
               <h2 className="text-4xl md:text-5xl font-serif text-white mb-6">
-                Anonymous Investor Chat
+                Anonymous <span className='text-primary'>Investor Chat</span> 
               </h2>
               <p className="text-xl text-gray-300 mb-8 leading-relaxed">
                 Connect with verified investors and sellers while maintaining complete anonymity 
@@ -53,8 +52,7 @@ const AnonymousInvestorChat = () => {
                 All conversations are private and encrypted
               </div>
             </div>
-          </div>
-        </div>
+          </div>        
       </section>
   )
 }

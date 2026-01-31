@@ -7,9 +7,9 @@ import Container from '@/components/shared/Container/Container'
 const ContactPage = () => {
     return (
         <div>
-            <section className="bg-[#111111] py-20 border-b border-[#D4AF37]/10">
+            <section className="bg-[#111111] py-28 md:py-36 border-b border-[#D4AF37]/10">
                 <div className="max-w-4xl mx-auto px-6 text-center mb-16">
-                    <h1 className="text-4xl md:text-5xl font-serif text-white mb-6">
+                    <h1 className="text-4xl md:text-5xl font-serif text-primary mb-6">
                         Get in Touch
                     </h1>
                     <p className="text-xl text-gray-400 max-w-2xl mx-auto">
@@ -70,7 +70,7 @@ const ContactPage = () => {
                                 <p className="text-gray-400 mb-6">
                                     Find quick answers to common questions about our platform, pricing, and privacy policies.
                                 </p>
-                                <Button variant="outline" className="w-full justify-center">
+                                <Button className="w-full justify-center text-black">
                                     Visit Help Center
                                 </Button>
                             </div>

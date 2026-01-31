@@ -17,7 +17,7 @@ import Link from 'next/link';
 const PricingCard = () => {
     return (
         <section className="py-16 bg-[#0A0A0A]">
-            <div className="max-w-2xl mx-auto px-6">
+            <div className="max-w-2xl mx-auto px-2 md:px-6">
                 <div className="bg-gradient-to-b from-[#111111] to-[#0A0A0A] p-12 rounded-2xl border-2 border-[#D4AF37]/30 shadow-2xl shadow-[#D4AF37]/10">
                     <div className="text-center mb-8">
                         <h2 className="text-3xl font-serif text-white mb-4">Premium Membership</h2>

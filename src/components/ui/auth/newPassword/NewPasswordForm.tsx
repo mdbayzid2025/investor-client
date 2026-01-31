@@ -143,10 +143,10 @@ export function NewPasswordForm() {
             <div className="bg-[#1A1A1A] border border-primary/10 rounded-lg p-4">
               <p className="text-xs text-gray-400 mb-2">Password requirements:</p>
               <ul className="text-xs text-gray-500 space-y-1">
-                <li className={formData.password.length >= 8 ? 'text-primary' : ''}>
+                <li className={formData.password.length >= 8 ? '' : 'text-red-600'}>
                   • At least 8 characters
                 </li>
-                <li className={formData.password === formData.confirmPassword && formData.password ? 'text-primary' : ''}>
+                <li className={formData.password === formData.confirmPassword && formData.password ? '' : 'text-red-600'}>
                   • Passwords match
                 </li>
               </ul>

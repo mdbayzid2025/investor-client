@@ -1,13 +1,14 @@
 import React from 'react'
-import { Shield, Lock, MessageSquare, FileText, TrendingUp, CheckCircle, Eye, Users, ArrowRight } from 'lucide-react';
+import { Shield, Lock, MessageSquare, FileText, TrendingUp, CheckCircle, Eye, Users, ArrowRight, Castle } from 'lucide-react';
+import { playFairDisplay } from '@/constants/playFairDisplay';
 
 const WhatYouGet = () => {
     return (
-        <section className="py-24 bg-gradient-to-b from-[#0A0A0A] to-black">
-            <div className="max-w-7xl mx-auto px-6">
+        <section className="py10 lg:py-24 bg-gradient-to-b from-[#0A0A0A] to-black">
+            <div className="">
                 <div className="text-center mb-16">
-                    <h2 className="text-4xl md:text-5xl font-serif text-white mb-4">
-                        What You Get for R99/Month
+                    <h2 className={`${playFairDisplay?.className} text-4xl md:text-5xl font-serif text-white font-semibold mb-4`}>
+                        What You Get for  <span className='text-primary '>R99/Month</span> 
                     </h2>
                     <p className="text-xl text-gray-400">
                         Full access to South Africa's most discreet investor network
@@ -17,7 +18,7 @@ const WhatYouGet = () => {
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {[
                         {
-                            icon: TrendingUp,
+                            icon: Castle,
                             title: 'Off-Market Property Opportunities',
                             description: 'Access exclusive listings before they hit the public market. Development land, portfolios, and confidential sales.'
                         },
