@@ -1,7 +1,7 @@
 import { X, Send, Paperclip, Smile } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 
-export default function RequestDetailModal({ open, onClose }) {
+export default function RequestDetailModal({ open, onClose }: {open: boolean, onClose: ()=>void}) {
   const [messages, setMessages] = useState([
     {
       author: "Agent007",
@@ -48,6 +48,7 @@ export default function RequestDetailModal({ open, onClose }) {
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
+    // @ts-ignore
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
@@ -70,7 +71,7 @@ export default function RequestDetailModal({ open, onClose }) {
     setInputValue("");
   };
 
-  const handleKeyPress = (e) => {
+  const handleKeyPress = (e:any) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();

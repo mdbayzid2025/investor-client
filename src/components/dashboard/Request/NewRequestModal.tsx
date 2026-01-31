@@ -1,7 +1,7 @@
 import React from "react";
 import { X } from "lucide-react";
 
-export default function NewRequestModal({ open, onClose }) {
+export default function NewRequestModal({ open, onClose }: {open: boolean, onClose: ()=>void}) {
   if (!open) return null;
 
   return (
