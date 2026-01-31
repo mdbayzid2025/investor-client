@@ -34,11 +34,11 @@ const navItems: NavItem[] = [
   },
   { name: "Profile", href: "/user-dashboard/profile", icon: User },
   { name: "Settings", href: "/user-dashboard/settings", icon: Settings },
-  {
-    name: "Help & Support",
-    href: "/user-dashboard/help-and-support",
-    icon: HelpCircle,
-  },
+  // {
+  //   name: "Help & Support",
+  //   href: "/user-dashboard/help-and-support",
+  //   icon: HelpCircle,
+  // },
 ];
 
 export function Sidebar() {
