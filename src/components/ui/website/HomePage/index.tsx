@@ -1,14 +1,13 @@
-import React from 'react'
 import HeroSection from './HeroSection'
 import WhatIsInvestorHub from './WhatIsInvestorHub'
 import WhatYouGet from './WhatYouGet'
 
+import Container from '@/components/shared/Container/Container'
 import AnonymousInvestorChat from './AnonymousInvestorChat'
 import MonthlyInvestorBrief from './MonthlyInvestorBrief'
+import OffMarketOpportunities from './OffMarketOpportunities'
 import TrustAndConfidentiality from './TrustAndConfidentiality'
 import UnLockMarket from './UnLockMarket'
-import Container from '@/components/shared/Container/Container'
-import OffMarketOpportunities from './OffMarketOpportunities'
 
 const HomePage = () => {
   return (

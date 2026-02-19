@@ -1,7 +1,5 @@
 
-import React from 'react'
-import { LoginForm } from '@/components/ui/auth/login/LoginForm'
-import { AiTwotoneSafetyCertificate } from "react-icons/ai";
+import { LoginForm } from '@/components/ui/auth/login/LoginForm';
 import { Shield, User } from 'lucide-react';
 const page = () => {
   return (

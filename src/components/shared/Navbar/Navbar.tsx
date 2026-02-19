@@ -2,18 +2,30 @@
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import React from "react";
 import Container from "../Container/Container";
+import { getImageUrl } from "@/utils/baseUrl";
+import Avatar from '@mui/material/Avatar';
+import getStringToAvater from "@/utils/getStringToAvater";
+import Cookies from "js-cookie";
 
-export function Navbar() {
+
+export function Navbar({ profile }: { profile?: any }) {
+
   const pathname = usePathname();
+  const router = useRouter()
   const navLinks = [
     { name: "Home", path: "/" },
     { name: "How It Works", path: "/how-it-works" },
     { name: "About", path: "/about" },
     { name: "Pricing", path: "/pricing" },
   ];
+
+  const handleLogout = ()=>{
+    Cookies.remove("accessToken");
+    router?.refresh()
+  }
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-[#0A0A0A]/95 backdrop-blur-md border-b border-primary/10">
@@ -34,11 +46,10 @@ export function Navbar() {
               <Link
                 key={link.path}
                 href={link.path}
-                className={`text-sm transition-colors ${
-                  pathname === link.path
-                    ? "text-primary"
-                    : "text-gray-300 hover:text-primary"
-                }`}
+                className={`text-sm transition-colors ${pathname === link.path
+                  ? "text-primary"
+                  : "text-gray-300 hover:text-primary"
+                  }`}
               >
                 {link.name}
               </Link>
@@ -46,19 +57,37 @@ export function Navbar() {
           </div>
 
           <div className="flex items-center gap-4">
-            <Link href="/login">
+            {profile ?
+            <>
+              {profile?.image ? <Image height={100} width={100} className="h-20 w-20 rounded-full border-2 border-gray-400/30" src={getImageUrl() + profile?.image} alt="Profile" />
+              : <Avatar  {...getStringToAvater(profile?.name, {height: 50, width: 50})} />  
+            }
               <Button
                 size="lg"
-                variant="link"
-                className="text-white cursor-pointer"
+                variant="outline"
+                onClick={()=>handleLogout()}
+                className="text-primary! bg-black! cursor-pointer"
               >
-                Login
+                Logout
               </Button>
-            </Link>
-            <Link href="/signup">
-              {" "}
-              <Button>Get Started</Button>
-            </Link>
+              
+              </> :
+              <>
+                <Link href="/login">
+                  <Button
+                    size="lg"
+                    variant="link"
+                    className="text-white cursor-pointer"
+                  >
+                    Login
+                  </Button>
+                </Link>
+                <Link href="/signup">
+                  {" "}
+                  <Button>Get Started</Button>
+                </Link>
+              </>
+            }
           </div>
         </div>
       </Container>

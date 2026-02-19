@@ -15,6 +15,9 @@ import {
   Package,
   CreditCard,
 } from "lucide-react";
+import Cookies from "js-cookie";
+
+
 
 interface NavItem {
   name: string;
@@ -46,8 +49,7 @@ export function Sidebar() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   const handleLogout = () => {
-    // TODO: Implement actual logout logic
-    console.log("Logging out...");
+    Cookies.remove("accessToken");
     window.location.href = "/login";
   };
 
