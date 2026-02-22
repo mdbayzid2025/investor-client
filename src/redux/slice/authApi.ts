@@ -29,6 +29,13 @@ const authApi = baseApi.injectEndpoints({
         body: data,
       }),
     }),
+    signup: build.mutation({
+      query: (data) => ({
+        url: "/users/register",
+        method: "POST",
+        body: data,
+      }),
+    }),
 
     changePassword: build.mutation({
       query: (data) => ({
@@ -57,6 +64,7 @@ const authApi = baseApi.injectEndpoints({
         };
       },
     }),
+
     // reset password
     resetPassword: build.mutation({      
       query: (data) => {
@@ -72,14 +80,27 @@ const authApi = baseApi.injectEndpoints({
         }      
       },
     }),
+
+    // reset password
+    resendOtp: build.mutation({      
+      query: (data) => {
+       return {
+        url: "/auth/resend-otp",
+        method: "POST",
+        body: data,                            
+        }      
+      },
+    }),
   }),
 });
 
 export const {
   useLoginMutation,
+  useSignupMutation,
   useRegisterUserMutation,
   useChangePasswordMutation,
 
+  useResendOtpMutation,
   useResetPasswordMutation,
   useVerifyOTPMutation,
   useForgetPasswordMutation,  

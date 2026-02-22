@@ -1,17 +1,19 @@
 'use client'
 import React, { useState } from 'react';
-
-
 import { User, Mail, Lock, Phone, Building, DollarSign, MapPin, Briefcase } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '../../button';
+import { useSignupMutation } from '@/redux/slice/authApi';
+import { toast } from 'sonner';
+import Cookies from 'js-cookie';
+
 
 export function SignupForm() {
   const router = useRouter()
+
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
+    name: '',
     email: '',
     phone: '',
     password: '',
@@ -22,26 +24,29 @@ export function SignupForm() {
     ffcNumber: '',
     // Investor fields
     investorType: '',
-    investmentAmount: '',
+    investmentBudget: '',   // ✅ Fixed: was 'investmentAmount', schema uses 'investmentBudget'
     location: '',
     // Developer fields
-    companyName: ''
+    companyName: '',
+    // Terms
+    termsAndConditions: false,  // ✅ Added: schema has termsAndConditions field
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  
+  const [signup] = useSignupMutation();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
-    
+
     // Validate passwords match
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
       setIsLoading(false);
       return;
     }
-    
+
     // Validate password strength
     if (formData.password.length < 8) {
       setError('Password must be at least 8 characters long');
@@ -54,84 +59,119 @@ export function SignupForm() {
       setError('Please select your role');
       setIsLoading(false);
       return;
-    }    
-    try {              
-      // Mock successful registration
-      console.log('Sign up successful:', { 
-        name: `${formData.firstName} ${formData.lastName}`, 
-        email: formData.email,
-        phone: formData.phone,
-        role: formData.role
-      });
+    }
+
+    // Validate role-specific required fields
+    if (formData.role === 'agent') {
+      if (!formData.agencyDetails || !formData.ffcNumber) {
+        setError('Please fill in all agent details');
+        setIsLoading(false);
+        return;
+      }
+    }
+
+    if (formData.role === 'investor') {
+      if (!formData.investorType || !formData.investmentBudget || !formData.location) {
+        setError('Please fill in all investor details');
+        setIsLoading(false);
+        return;
+      }
+    }
+
+    if (formData.role === 'developer') {
+      if (!formData.companyName) {
+        setError('Please provide your company name');
+        setIsLoading(false);
+        return;
+      }
+    }
+
+    try {
+      // Build payload matching the schema exactly
+      // ✅ Strip confirmPassword (not in schema), send termsAndConditions as boolean
+      const { confirmPassword, ...rest } = formData;
+
+      const payload: Record<string, any> = {
+        name: rest.name,
+        email: rest.email,
+        phone: rest.phone,
+        password: rest.password,
+        role: rest.role,
+        termsAndConditions: rest.termsAndConditions,  // ✅ boolean sent to backend
+      };
+
+      // Role-specific fields — only include what's relevant
+      if (rest.role === 'AGENT') {
+        payload.agencyDetails = rest.agencyDetails;
+        payload.ffcNumber = rest.ffcNumber;
+      }
+
+      if (rest.role === 'INVESTOR') {
+        payload.investorType = rest.investorType;
+        payload.investmentBudget = Number(rest.investmentBudget); // ✅ schema type is Number
+        payload.location = rest.location;
+      }
+
+      if (rest.role === 'DEVELOPER') {
+        payload.companyName = rest.companyName;
+      }
+
+      // TODO: Replace with your actual API call
+      const response = await signup(payload)?.unwrap();
+      console.log("response", response);
       
-      // Redirect to dashboard after successful signup
-      router.replace('/login');
-    } catch (err) {
-      setError('An error occurred during registration. Please try again.');
-      console.error('Sign up error:', err);
-    } finally {
-      setIsLoading(false);
+      if (response.success) {
+        toast.success("We’ve sent an OTP to your email. Please verify your account using the OTP.")
+        setIsLoading(false)
+        router.replace('/otp-verify');
+        Cookies.set("verify-email", payload?.email)
+      }
+    } catch (err: any) {
+      toast.error(err?.data?.message)
+      setIsLoading(false)
     }
   };
-  
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value, type } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      // ✅ Handle checkbox as boolean
+      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
     });
   };
-  
+
   return (
     <div className="">
       <div className="w-full">
         <div className="text-center mb-8">
-          {/* <Logo className="justify-center mb-8" /> */}
           <h1 className="text-4xl font-serif text-white mb-2">Join Investors Hub</h1>
           <p className="text-gray-400">Create your account and start investing</p>
         </div>
-        
-        <div className="bg-[#111111] p-8 rounded-xl border border-[#D4AF37]/20">
+
+        <div className="bg-[#111111] p-8 rounded-xl border border-primary/20">
           <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Name Fields - Split for better UX */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  First Name
-                </label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
-                  <input
-                    type="text"
-                    name="firstName"
-                    value={formData.firstName}
-                    onChange={handleChange}
-                    className="w-full bg-[#1A1A1A] border border-[#D4AF37]/20 rounded-lg px-12 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-[#D4AF37] transition-colors"
-                    placeholder="John"
-                    required
-                  />
-                </div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Last Name
-                </label>
+
+            {/* Name */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Name</label>
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
                 <input
                   type="text"
-                  name="lastName"
-                  value={formData.lastName}
+                  name="name"
+                  value={formData.name}
                   onChange={handleChange}
-                  className="w-full bg-[#1A1A1A] border border-[#D4AF37]/20 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-[#D4AF37] transition-colors"
-                  placeholder="Doe"
+                  className="w-full bg-[#1A1A1A] border border-primary/20 rounded-lg px-12 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-colors"
+                  placeholder="John"
                   required
                 />
               </div>
             </div>
-            
+
+            {/* Email */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Email Address
-              </label>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Email Address</label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
                 <input
@@ -139,17 +179,16 @@ export function SignupForm() {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full bg-[#1A1A1A] border border-[#D4AF37]/20 rounded-lg px-12 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-[#D4AF37] transition-colors"
+                  className="w-full bg-[#1A1A1A] border border-primary/20 rounded-lg px-12 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-colors"
                   placeholder="you@example.com"
                   required
                 />
               </div>
             </div>
-            
+
+            {/* Phone */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Contact Number
-              </label>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Contact Number</label>
               <div className="relative">
                 <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
                 <input
@@ -157,17 +196,16 @@ export function SignupForm() {
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
-                  className="w-full bg-[#1A1A1A] border border-[#D4AF37]/20 rounded-lg px-12 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-[#D4AF37] transition-colors"
+                  className="w-full bg-[#1A1A1A] border border-primary/20 rounded-lg px-12 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-colors"
                   placeholder="+27 82 123 4567"
                   required
                 />
               </div>
             </div>
-            
+
+            {/* Password */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Password
-              </label>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Password</label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
                 <input
@@ -175,17 +213,16 @@ export function SignupForm() {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className="w-full bg-[#1A1A1A] border border-[#D4AF37]/20 rounded-lg px-12 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-[#D4AF37] transition-colors"
+                  className="w-full bg-[#1A1A1A] border border-primary/20 rounded-lg px-12 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-colors"
                   placeholder="Minimum 8 characters"
                   required
                 />
               </div>
             </div>
 
+            {/* Confirm Password */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Confirm Password
-              </label>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Confirm Password</label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
                 <input
@@ -193,46 +230,44 @@ export function SignupForm() {
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className="w-full bg-[#1A1A1A] border border-[#D4AF37]/20 rounded-lg px-12 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-[#D4AF37] transition-colors"
+                  className="w-full bg-[#1A1A1A] border border-primary/20 rounded-lg px-12 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-colors"
                   placeholder="Re-enter password"
                   required
                 />
               </div>
             </div>
 
+            {/* Role */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                I am a
-              </label>
+              <label className="block text-sm font-medium text-gray-300 mb-2">I am a</label>
               <div className="relative">
                 <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
                 <select
                   name="role"
                   value={formData.role}
                   onChange={handleChange}
-                  className="w-full bg-[#1A1A1A] border border-[#D4AF37]/20 rounded-lg pl-12 pr-4 py-3 text-white focus:outline-none focus:border-[#D4AF37] transition-colors"
+                  className="w-full bg-[#1A1A1A] border border-primary/20 rounded-lg pl-12 pr-4 py-3 text-white focus:outline-none focus:border-primary transition-colors"
                   required
                 >
                   <option value="">Select your role</option>
-                  <option value="investor">Investor</option>
-                  <option value="agent">Agent</option>
-                  <option value="developer">Developer</option>
-                  <option value="seller">Seller</option>
+                  <option value="INVESTOR">Investor</option>
+                  <option value="AGENT">Agent</option>
+                  <option value="DEVELOPER">Developer</option>
+                  <option value="SELLER">Seller</option>
                 </select>
               </div>
               <p className="mt-1.5 text-xs text-gray-500">Helps us personalize your experience</p>
             </div>
 
-            {/* Conditional Fields with smooth transition */}
+            {/* Conditional Fields */}
             {formData.role && (
-              <div className="pt-4 border-t border-[#D4AF37]/10 space-y-5 animate-fadeIn">
-                {/* Agent Conditional Fields */}
-                {formData.role === 'agent' && (
+              <div className="pt-4 border-t border-primary/10 space-y-5 animate-fadeIn">
+
+                {/* Agent Fields */}
+                {formData.role === 'AGENT' && (
                   <>
                     <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">
-                        Agency Details
-                      </label>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">Agency Details</label>
                       <div className="relative">
                         <Building className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
                         <input
@@ -240,23 +275,21 @@ export function SignupForm() {
                           name="agencyDetails"
                           value={formData.agencyDetails}
                           onChange={handleChange}
-                          className="w-full bg-[#1A1A1A] border border-[#D4AF37]/20 rounded-lg px-12 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-[#D4AF37] transition-colors"
+                          className="w-full bg-[#1A1A1A] border border-primary/20 rounded-lg px-12 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-colors"
                           placeholder="e.g. ABC Realty, Sandton Branch"
                           required
                         />
                       </div>
                     </div>
-                    
+
                     <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">
-                        FFC Number
-                      </label>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">FFC Number</label>
                       <input
                         type="text"
                         name="ffcNumber"
                         value={formData.ffcNumber}
                         onChange={handleChange}
-                        className="w-full bg-[#1A1A1A] border border-[#D4AF37]/20 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-[#D4AF37] transition-colors"
+                        className="w-full bg-[#1A1A1A] border border-primary/20 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-colors"
                         placeholder="FFC-123456"
                         required
                       />
@@ -264,18 +297,16 @@ export function SignupForm() {
                   </>
                 )}
 
-                {/* Investor Conditional Fields */}
-                {formData.role === 'investor' && (
+                {/* Investor Fields */}
+                {formData.role === 'INVESTOR' && (
                   <>
                     <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">
-                        Investor Type
-                      </label>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">Investor Type</label>
                       <select
                         name="investorType"
                         value={formData.investorType}
                         onChange={handleChange}
-                        className="w-full bg-[#1A1A1A] border border-[#D4AF37]/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#D4AF37] transition-colors"
+                        className="w-full bg-[#1A1A1A] border border-primary/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors"
                         required
                       >
                         <option value="">Select type</option>
@@ -286,17 +317,16 @@ export function SignupForm() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">
-                        Investment Budget
-                      </label>
+                      {/* ✅ Fixed label and field name: investmentBudget (was investmentAmount) */}
+                      <label className="block text-sm font-medium text-gray-300 mb-2">Investment Budget</label>
                       <div className="relative">
                         <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
                         <input
                           type="number"
-                          name="investmentAmount"
-                          value={formData.investmentAmount}
+                          name="investmentBudget"
+                          value={formData.investmentBudget}
                           onChange={handleChange}
-                          className="w-full bg-[#1A1A1A] border border-[#D4AF37]/20 rounded-lg px-12 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-[#D4AF37] transition-colors"
+                          className="w-full bg-[#1A1A1A] border border-primary/20 rounded-lg px-12 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-colors"
                           placeholder="e.g. 500000"
                           min="0"
                           step="10000"
@@ -306,16 +336,14 @@ export function SignupForm() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">
-                        Location
-                      </label>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">Location</label>
                       <div className="relative">
                         <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
                         <select
                           name="location"
                           value={formData.location}
                           onChange={handleChange}
-                          className="w-full bg-[#1A1A1A] border border-[#D4AF37]/20 rounded-lg pl-12 pr-4 py-3 text-white focus:outline-none focus:border-[#D4AF37] transition-colors"
+                          className="w-full bg-[#1A1A1A] border border-primary/20 rounded-lg pl-12 pr-4 py-3 text-white focus:outline-none focus:border-primary transition-colors"
                           required
                         >
                           <option value="">Select location</option>
@@ -327,12 +355,10 @@ export function SignupForm() {
                   </>
                 )}
 
-                {/* Developer Conditional Fields */}
-                {formData.role === 'developer' && (
+                {/* Developer Fields */}
+                {formData.role === 'DEVELOPER' && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Company Name
-                    </label>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Company Name</label>
                     <div className="relative">
                       <Building className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
                       <input
@@ -340,7 +366,7 @@ export function SignupForm() {
                         name="companyName"
                         value={formData.companyName}
                         onChange={handleChange}
-                        className="w-full bg-[#1A1A1A] border border-[#D4AF37]/20 rounded-lg px-12 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-[#D4AF37] transition-colors"
+                        className="w-full bg-[#1A1A1A] border border-primary/20 rounded-lg px-12 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-colors"
                         placeholder="e.g. XYZ Developments (Pty) Ltd"
                         required
                       />
@@ -349,23 +375,27 @@ export function SignupForm() {
                 )}
               </div>
             )}
-            
+
+            {/* ✅ Fixed: termsAndConditions handled as boolean via handleChange */}
             <div className="text-xs text-gray-400 pt-2">
               <label className="flex items-start">
-                <input type="checkbox" className="mr-2 mt-1 accent-[#D4AF37]" required />
+                <input
+                  type="checkbox"
+                  name="termsAndConditions"
+                  checked={formData.termsAndConditions}
+                  onChange={handleChange}
+                  className="mr-2 mt-1 accent-primary"
+                  required
+                />
                 <span>
                   I agree to the{' '}
-                  <Link href="/terms" className="text-[#D4AF37] hover:text-[#E4C77D]">
-                    Terms of Service
-                  </Link>{' '}
+                  <Link href="/terms" className="text-primary hover:text-[#E4C77D]">Terms of Service</Link>{' '}
                   and{' '}
-                  <Link href="/privacy" className="text-[#D4AF37] hover:text-[#E4C77D]">
-                    Privacy Policy
-                  </Link>
+                  <Link href="/privacy" className="text-primary hover:text-[#E4C77D]">Privacy Policy</Link>
                 </span>
               </label>
             </div>
-            
+
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? 'Creating Account...' : 'Create Account'}
             </Button>
@@ -373,19 +403,17 @@ export function SignupForm() {
             <p className="text-xs text-center text-gray-500">
               All information is handled confidentially.
             </p>
-            
+
             {error && (
               <div className="mt-2 text-sm text-red-500">
                 {error}
               </div>
             )}
           </form>
-          
+
           <div className="mt-6 text-center text-sm text-gray-400">
             Already have an account?{' '}
-            <Link href="/login" className="text-[#D4AF37] hover:text-[#E4C77D] font-medium">
-              Sign in
-            </Link>
+            <Link href="/login" className="text-primary hover:text-[#E4C77D] font-medium">Sign in</Link>
           </div>
         </div>
       </div>

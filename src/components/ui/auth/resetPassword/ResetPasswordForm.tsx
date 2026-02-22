@@ -1,16 +1,21 @@
 'use client'
 import React, { useState } from 'react';
 
-import { Mail, ArrowLeft, CheckCircle } from 'lucide-react';
+import { useForgetPasswordMutation } from '@/redux/slice/authApi';
+import Cookies from 'js-cookie';
+import { ArrowLeft, Mail } from 'lucide-react';
 import Link from 'next/link';
-import { Button } from '../../button';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
+import { Button } from '../../button';
+
 
 export function ResetPasswordForm() {
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);  
   const [error, setError] = useState('');
   
+  const [forgotPassword] = useForgetPasswordMutation()
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -19,19 +24,20 @@ export function ResetPasswordForm() {
     setError('');
     
     try {
-      // TODO: Replace with actual password reset API call
-      // const response = await fetch('/api/auth/forgot-password', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ email })
-      // });
+      const response = await forgotPassword({email})?.unwrap();
       
-      
-      // Mock successful request
-      router.push("otp-verify")
-    } catch (err) {
-      setError('An error occurred. Please try again.');
-      console.error('Password reset error:', err);
+      if (response?.success) {
+        toast.success(response?.message)
+        Cookies.set("verify-email", email);
+        const expiryTime = Date.now() + 3 * 60 * 1000;
+        Cookies.set("otpExpiry", expiryTime.toString());
+        router.push("/otp-verify")
+      } else {
+        toast.error(response?.message)
+      }
+            
+    } catch (err:any) {      
+      toast.error(err?.data?.message)
     } finally {
       setIsLoading(false);
     }
@@ -39,7 +45,7 @@ export function ResetPasswordForm() {
   
   
   return (
-    <div className="min-h-screen flex items-center justify-center px-6 py-12 bg-gradient-to-br from-black via-[#0A0A0A] to-black">
+    <div className="min-h-screen flex items-center justify-center px-6 py-12 bg-linear-to-br from-black via-[#0A0A0A] to-black">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           {/* <Logo className="justify-center mb-8" /> */}
@@ -47,7 +53,7 @@ export function ResetPasswordForm() {
           <p className="text-gray-400">Enter your email to receive reset instructions</p>
         </div>
         
-        <div className="bg-[#111111] p-8 rounded-xl border border-[#D4AF37]/20">
+        <div className="bg-[#111111] p-8 rounded-xl border border-primary/20">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -59,7 +65,7 @@ export function ResetPasswordForm() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-[#1A1A1A] border border-[#D4AF37]/20 rounded-lg px-12 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-[#D4AF37] transition-colors"
+                  className="w-full bg-[#1A1A1A] border border-primary/20 rounded-lg px-12 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-colors"
                   placeholder="you@example.com"
                   required
                 />
@@ -80,7 +86,7 @@ export function ResetPasswordForm() {
           <div className="mt-6 text-center">
             <Link 
               href="/login" 
-              className="inline-flex items-center text-sm text-gray-400 hover:text-[#D4AF37] transition-colors"
+              className="inline-flex items-center text-sm text-gray-400 hover:text-primary transition-colors"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Sign In
