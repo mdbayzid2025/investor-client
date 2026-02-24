@@ -22,7 +22,7 @@ export function Navbar({ profile }: { profile?: any }) {
     { name: "Pricing", path: "/pricing" },
   ];
 
-  const handleLogout = ()=>{
+  const handleLogout = () => {
     Cookies.remove("accessToken");
     router?.refresh()
   }
@@ -33,13 +33,13 @@ export function Navbar({ profile }: { profile?: any }) {
         <div className="flex items-center justify-between">
           <div className={`flex items-center gap-3`}>
             <Link href="/user-dashboard">
-            <Image
-              height={150}
-              width={150}
-              src="/logo.png"
-              alt="Investors Hub"
-              className="h-20 object-cover overflow-visible"
-            />
+              <Image
+                height={150}
+                width={150}
+                src="/logo.png"
+                alt="Investors Hub"
+                className="h-20 object-cover overflow-visible"
+              />
             </Link>
           </div>
 
@@ -60,19 +60,19 @@ export function Navbar({ profile }: { profile?: any }) {
 
           <div className="flex items-center gap-4">
             {profile ?
-            <>
-              {profile?.image ? <Image height={100} width={100} className="h-20 w-20 rounded-full border-2 border-gray-400/30"  src={getImageUrl() + profile?.image} alt="Profile" />
-              : <Avatar  {...getStringToAvater(profile?.name, {height: 50, width: 50})} />  
-            }
-              <Button
-                size="lg"
-                variant="outline"
-                onClick={()=>handleLogout()}
-                className="text-primary! bg-black! cursor-pointer"
-              >
-                Logout
-              </Button>
-              
+              <>
+                {profile?.image ? <Link href="user-dashboard"><Image height={100} width={100} className="h-12 w-12 rounded-full border-2 border-gray-400/30" src={getImageUrl() + profile?.image} alt="Profile" /></Link>
+                  : <Link href="user-dashboard"><Avatar  {...getStringToAvater(profile?.name, { height: 50, width: 50 })} /> </Link>
+                }
+                <Button
+                  size="lg"
+                  variant="outline"
+                  onClick={() => handleLogout()}
+                  className="text-primary! bg-black! cursor-pointer"
+                >
+                  Logout
+                </Button>
+
               </> :
               <>
                 <Link href="/login">

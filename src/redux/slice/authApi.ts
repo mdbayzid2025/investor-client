@@ -41,11 +41,7 @@ const authApi = baseApi.injectEndpoints({
       query: (data) => ({
         url: "/auth/change-password",
         method: "POST",
-        body: data,
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${Cookies.get("accessToken")}`
-        },
+        body: data,        
       }),
     }),
 
@@ -77,11 +73,7 @@ const authApi = baseApi.injectEndpoints({
         return {
           url: "/auth/reset-password",
           method: "POST",
-          body: data,
-          headers: {
-            "Content-Type": "application/json",
-            "token": `${Cookies.get("resetToken")}`,
-          },
+          body: data,          
         }
       },
     }),

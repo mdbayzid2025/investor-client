@@ -9,6 +9,6 @@ export const baseApi = createApi({
    }),
   
   endpoints: () => ({}),
-  tagTypes: ["user", "admin", "profile"],
+  tagTypes: ["user", "admin", "profile", "request", "savedRequest", "chat"],
   
 });
