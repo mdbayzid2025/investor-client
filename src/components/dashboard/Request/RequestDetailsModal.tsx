@@ -34,6 +34,8 @@ function ChatListPanel({
 }) {
   const { data, isLoading } = useGetOwnerConversationQuery(requestId);
 
+  console.log("my conversion", data);
+  
   if (isLoading) {
     return <p className="p-4 text-gray-400">Loading conversations...</p>;
   }
@@ -125,9 +127,9 @@ export default function RequestDetailModal({
   const search = searchParams.get('search')
   if (!open) return null;
 
-  const owner = profileData?._id?.toString() === requestData?.data?.createdBy?._id?.toString();
+  const owner = profileData?._id?.toString() === requestData?.createdBy?._id?.toString();
 
-  console.log("owner ", owner);
+  console.log("request data", requestData);
   
   return (
     <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
@@ -163,7 +165,8 @@ export default function RequestDetailModal({
             // Owner: show list → then drill into a conversation
             selectedConversationId ? (
               <ConversationPanel
-                conversationId={selectedConversationId}                
+                conversationId={selectedConversationId}      
+                setSelectedConversationId={setSelectedConversationId}          
               />
             ) : (
               <ChatListPanel

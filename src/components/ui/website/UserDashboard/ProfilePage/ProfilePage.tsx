@@ -10,6 +10,7 @@ import {
   Upload,
   Camera,
   X,
+  Phone,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useEditProfileMutation } from "@/redux/slice/userApi";
@@ -214,79 +215,68 @@ export default function ProfilePage({ profile }: any) {
             </div>
           </div>
         </section>
+             
+        <div className="flex gap-3">
 
-        {/* 2. Role Selection
-        <section className="bg-[#111] border border-primary/20 rounded-xl p-6">
-          <h2 className="text-xl font-serif text-white mb-4 ">Account Type <span className="capitalize! text-primary">({profile?.role})</span></h2>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-           {ROLES.map((r) => (
-              <button
-                key={r}
-                type="button"
-                onClick={() => setRole(r)}
-                className={`py-3 px-4 rounded-lg text-sm font-medium transition-all border ${role === r
-                    ? "bg-primary text-black border-primary shadow-sm"
-                    : "bg-[#1a1a1a] text-gray-400 border-transparent hover:border-primary/40"
-                  }`}
-              >
-                {r}
-              </button>
-            ))}
-          </div>
-        </section> */}
-
-        {/* 3. Verification Status */}
-        <section
-          className={`rounded-xl p-6 border flex flex-col sm:flex-row items-center justify-between gap-6 ${isVerified
-            ? "bg-gradient-to-br from-green-950/30 to-[#111] border-green-700/30"
-            : "bg-gradient-to-br from-amber-950/20 to-[#111] border-primary/30"
-            }`}
-        >
-          <div className="">
-            <h2 className="text-xl font-serif text-white mb-4 ">Account Type <span className="capitalize! text-primary">({profile?.role})</span></h2>
-
-            <div className="flex items-center gap-4">
-
-              <div
-                className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 ${isVerified ? "bg-green-600/20" : "bg-primary/10"
-                  }`}
-              >
-                {isVerified ? (
-                  <CheckCircle className="w-6 h-6 text-green-400" />
-                ) : (
-                  <Shield className="w-6 h-6 text-primary" />
-                )}
-              </div>
-              <div>
-                <h3
-                  className={`font-medium ${isVerified ? "text-green-300" : "text-primary"
-                    }`}
-                >
-                  {isVerified ? "Verified" : "Identity Verification Required"}
-                </h3>
-                <p className="text-sm text-gray-400 mt-1">
-                  {isVerified
-                    ? "Your identity has been confirmed."
-                    : "Complete verification to access full features."}
-                </p>
-              </div>
+          {/* 1. Account Type */}
+          <div className="flex-1 bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-4">
+            <div className="flex items-center gap-2 text-gray-400 text-sm mb-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+              Account Type
             </div>
+            <div className="text-white font-bold text-lg capitalize">{profile?.role || "Developer"}</div>
           </div>
 
+          {/* 2. Verification Status */}
+          <div className={`flex-1 rounded-xl p-4 border ${isVerified ? "bg-[#0d2a1a] border-[#1a4a2a]" : "bg-[#1a1a1a] border-[#2a2a2a]"}`}>
+            <div className="flex items-center gap-2 text-gray-400 text-sm mb-2">
+              {isVerified ? (
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                  <polyline points="22 4 12 14.01 9 11.01" />
+                </svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="8" x2="12" y2="12" />
+                  <line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+              )}
+              Verification
+            </div>
+            <div className={`font-bold text-lg ${isVerified ? "text-green-400" : "text-yellow-400"}`}>
+              {isVerified ? "Verified" : "Unverified"}
+            </div>
+            {!isVerified && (
+              <button
+                onClick={() => setShowVerificationModal(true)}
+                className="mt-2 text-xs bg-primary hover:bg-amber-300 text-black px-3 py-1 rounded-md font-medium transition"
+              >
+                Verify Now
+              </button>
+            )}
+          </div>
 
-          {!isVerified && (
-            <button
-              onClick={() => setShowVerificationModal(true)}
-              className="bg-primary hover:bg-amber-300 text-black px-6 py-2.5 rounded-lg font-medium transition w-full sm:w-auto"
-            >
-              Verify Identity
-            </button>
-          )}
-        </section>
+          {/* 3. Plan Status */}
+          <div className="flex-1 bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-4">
+            <div className="flex items-center gap-2 text-gray-400 text-sm mb-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#eab308" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+              </svg>
+              Plan
+            </div>
+            <div className="text-yellow-400 font-bold text-lg capitalize">{profile?.plan || "Pro"}</div>
+          </div>
+
+        </div>
+
 
         {/* 4. Form */}
         <section className="bg-[#111] border border-primary/20 rounded-xl p-6">
-          <h2 className="text-xl font-serif text-white mb-6">Details</h2>
+          <h2 className="text-xl font-serif text-white mb-6">Account Info</h2>
 
           <form onSubmit={handleSave} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -365,15 +355,27 @@ export default function ProfilePage({ profile }: any) {
               )}
 
               {role === "DEVELOPER" && (
-                <div className="relative">
-                  <Building className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
-                  <input
-                    name="companyName"
-                    value={form.companyName}
-                    onChange={handleTextChange}
-                    placeholder="Company / developer name"
-                    className="w-full bg-[#0a0a0a] border border-primary/20 rounded-lg pl-10 pr-4 py-3 text-white focus:border-primary outline-none"
-                  />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  <div className="relative">
+                    <Building className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                    <input
+                      name="companyName"
+                      value={form.companyName}
+                      onChange={handleTextChange}
+                      placeholder="Company / developer name"
+                      className="w-full bg-[#0a0a0a] border border-primary/20 rounded-lg pl-10 pr-4 py-3 text-white focus:border-primary outline-none"
+                    />
+                  </div>
+                  <div className="relative">
+                    <Phone  className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                    <input
+                      name="phone"
+                      value={form.phone}
+                      onChange={handleTextChange}
+                      placeholder="Company / developer name"
+                      className="w-full bg-[#0a0a0a] border border-primary/20 rounded-lg pl-10 pr-4 py-3 text-white focus:border-primary outline-none"
+                    />
+                  </div>
                 </div>
               )}
             </div>

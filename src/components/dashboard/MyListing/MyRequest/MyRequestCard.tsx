@@ -4,9 +4,9 @@ import { Avatar } from '@mui/material';
 import { MessageCircleMore } from 'lucide-react'
 import Image from 'next/image';
 import React, { useState } from 'react'
-import { formatChatTime } from '../Shared/FormatChatTime ';
+import { formatChatTime } from '../../Shared/FormatChatTime ';
 
-const RequestCard = ({req, setOpenConversation, setSelectRequest}: any) => {
+const MyRequestCard = ({req, setOpenConversation, setSelectRequest}: any) => {
 
   console.log("reqreq", req);
   
@@ -73,4 +73,4 @@ const RequestCard = ({req, setOpenConversation, setSelectRequest}: any) => {
   )
 }
 
-export default RequestCard
+export default MyRequestCard

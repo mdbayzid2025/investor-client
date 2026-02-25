@@ -30,6 +30,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { name: "Dashboard", href: "/user-dashboard", icon: LayoutDashboard },
   { name: "Requests", href: "/user-dashboard/requests", icon: FileText },
+  { name: "My Listing", href: "/user-dashboard/my-listing", icon: FileText },
   { name: "Stock", href: "/user-dashboard/stock", icon: Package },
   {
     name: "Subscription",

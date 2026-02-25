@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { X } from "lucide-react";
-import { useCreateRequestMutation } from "@/redux/slice/requestApi";
+import { useUpdateRequestMutation } from "@/redux/slice/requestApi";
 import { toast } from "sonner";
 
 const TOPICS = [
@@ -21,30 +21,57 @@ const URGENCY = [
   { label: "Urgent", value: "urgent" },
 ];
 
-const initialState = {
-  title: "",
-  topic: "",
-  urgency: "",
-  budgetRange: "",
-  location: "",
-  description: "",
+type RequestData = {
+  _id: string;
+  title: string;
+  topic: string;
+  urgency: string;
+  budgetRange: string;
+  location?: string;
+  description: string;
 };
 
-export default function NewRequestModal({
+type FormState = Omit<RequestData, "_id">;
+
+export default function UpdateRequestModal({
   open,
   onClose,
+  request,
 }: {
   open: boolean;
   onClose: () => void;
+  request: RequestData | null;
 }) {
-  const [formdata, setFormdata] = useState(initialState);
-  const [errors, setErrors] = useState<Partial<typeof initialState>>({});
-  const [createRequest, { isLoading }] = useCreateRequestMutation();
+  const [formdata, setFormdata] = useState<FormState>({
+    title: "",
+    topic: "",
+    urgency: "",
+    budgetRange: "",
+    location: "",
+    description: "",
+  });
+  const [errors, setErrors] = useState<Partial<FormState>>({});
+  const [updateRequest, { isLoading }] = useUpdateRequestMutation();
+
+  // Pre-fill form when request prop changes
+  useEffect(() => {
+    if (request) {
+      setFormdata({
+        title: request.title ?? "",
+        topic: request.topic ?? "",
+        urgency: request.urgency ?? "",
+        budgetRange: request.budgetRange ?? "",
+        location: request.location ?? "",
+        description: request.description ?? "",
+      });
+      setErrors({});
+    }
+  }, [request]);
 
   if (!open) return null;
 
   const validate = () => {
-    const newErrors: Partial<typeof initialState> = {};
+    const newErrors: Partial<FormState> = {};
     if (!formdata.title.trim()) newErrors.title = "Title is required";
     if (!formdata.topic) newErrors.topic = "Please select a topic";
     if (!formdata.urgency) newErrors.urgency = "Please select urgency";
@@ -59,20 +86,18 @@ export default function NewRequestModal({
   ) => {
     const { name, value } = e.target;
     setFormdata((prev) => ({ ...prev, [name]: value }));
-    // clear error on change
-    if (errors[name as keyof typeof initialState]) {
+    if (errors[name as keyof FormState]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validate()) return;
+    if (!validate() || !request?._id) return;
     try {
-      const response = await createRequest(formdata).unwrap();
+      const response = await updateRequest({ id: request._id, ...formdata }).unwrap();
       if (response?.success) {
-        toast.success(response?.message ?? "Request posted successfully");
-        setFormdata(initialState);
+        toast.success(response?.message ?? "Request updated successfully");
         onClose();
       }
     } catch (error: any) {
@@ -81,10 +106,19 @@ export default function NewRequestModal({
   };
 
   const handleClose = () => {
-    setFormdata(initialState);
     setErrors({});
     onClose();
   };
+
+  const inputClass = (field: keyof FormState) =>
+    `w-full bg-[#0D0D0D] border px-4 py-2.5 text-sm rounded placeholder-gray-600 outline-none focus:border-primary/60 transition-colors ${
+      errors[field] ? "border-red-500/60" : "border-white/10"
+    }`;
+
+  const selectClass = (field: keyof FormState) =>
+    `w-full bg-[#0D0D0D] border text-sm px-4 py-2.5 rounded outline-none focus:border-primary/60 transition-colors ${
+      errors[field] ? "border-red-500/60" : "border-white/10"
+    } ${!formdata[field] ? "text-gray-600" : "text-white"}`;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4">
@@ -97,8 +131,8 @@ export default function NewRequestModal({
           <X className="w-4 h-4" />
         </button>
 
-        <h2 className="text-lg font-semibold mb-1">Add Request</h2>
-        <p className="text-xs text-gray-500 mb-5">Fill in the details to post a new property request.</p>
+        <h2 className="text-lg font-semibold mb-1">Update Request</h2>
+        <p className="text-xs text-gray-500 mb-5">Edit the details below to update your request.</p>
 
         <form onSubmit={handleSubmit} noValidate>
           <div className="space-y-4">
@@ -109,9 +143,7 @@ export default function NewRequestModal({
                 name="title"
                 value={formdata.title}
                 placeholder="Title"
-                className={`w-full bg-[#0D0D0D] border px-4 py-2.5 text-sm rounded placeholder-gray-600 outline-none focus:border-primary/60 transition-colors ${
-                  errors.title ? "border-red-500/60" : "border-white/10"
-                }`}
+                className={inputClass("title")}
               />
               {errors.title && <p className="text-xs text-red-400 mt-1">{errors.title}</p>}
             </div>
@@ -123,9 +155,7 @@ export default function NewRequestModal({
                   onChange={handleChange}
                   name="topic"
                   value={formdata.topic}
-                  className={`w-full bg-[#0D0D0D] border text-sm px-4 py-2.5 rounded outline-none focus:border-primary/60 transition-colors ${
-                    errors.topic ? "border-red-500/60" : "border-white/10"
-                  } ${!formdata.topic ? "text-gray-600" : "text-white"}`}
+                  className={selectClass("topic")}
                 >
                   {TOPICS.map((op) => (
                     <option key={op.value} value={op.value} disabled={op.value === ""}>
@@ -141,9 +171,7 @@ export default function NewRequestModal({
                   onChange={handleChange}
                   name="urgency"
                   value={formdata.urgency}
-                  className={`w-full bg-[#0D0D0D] border text-sm px-4 py-2.5 rounded outline-none focus:border-primary/60 transition-colors ${
-                    errors.urgency ? "border-red-500/60" : "border-white/10"
-                  } ${!formdata.urgency ? "text-gray-600" : "text-white"}`}
+                  className={selectClass("urgency")}
                 >
                   {URGENCY.map((op) => (
                     <option key={op.value} value={op.value} disabled={op.value === ""}>
@@ -163,11 +191,11 @@ export default function NewRequestModal({
                   name="budgetRange"
                   value={formdata.budgetRange}
                   placeholder="Budget Range (e.g. R2M – R5M)"
-                  className={`w-full bg-[#0D0D0D] border px-4 py-2.5 text-sm rounded placeholder-gray-600 outline-none focus:border-primary/60 transition-colors ${
-                    errors.budgetRange ? "border-red-500/60" : "border-white/10"
-                  }`}
+                  className={inputClass("budgetRange")}
                 />
-                {errors.budgetRange && <p className="text-xs text-red-400 mt-1">{errors.budgetRange}</p>}
+                {errors.budgetRange && (
+                  <p className="text-xs text-red-400 mt-1">{errors.budgetRange}</p>
+                )}
               </div>
 
               <div>
@@ -189,11 +217,11 @@ export default function NewRequestModal({
                 value={formdata.description}
                 rows={4}
                 placeholder="Describe what you are looking for..."
-                className={`w-full bg-[#0D0D0D] border px-4 py-2.5 text-sm rounded placeholder-gray-600 outline-none focus:border-primary/60 transition-colors resize-none ${
-                  errors.description ? "border-red-500/60" : "border-white/10"
-                }`}
+                className={`${inputClass("description")} resize-none`}
               />
-              {errors.description && <p className="text-xs text-red-400 mt-1">{errors.description}</p>}
+              {errors.description && (
+                <p className="text-xs text-red-400 mt-1">{errors.description}</p>
+              )}
             </div>
 
             {/* Actions */}
@@ -210,7 +238,7 @@ export default function NewRequestModal({
                 disabled={isLoading}
                 className="bg-primary text-black px-5 py-2 rounded text-sm font-medium hover:bg-[#F1D98A] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                {isLoading ? "Posting..." : "Post Request"}
+                {isLoading ? "Saving..." : "Save Changes"}
               </button>
             </div>
           </div>

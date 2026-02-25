@@ -47,7 +47,7 @@ const requestApi = baseApi.injectEndpoints({
         }),
         deleteRequest: build.mutation({
             query: (id: string) => ({
-                url: `/requests/${id}`,
+                url: `requests/delete/${id}`,
                 method: "DELETE",
                 headers: {
                     Authorization: `Bearer ${Cookies.get("accessToken")}`,

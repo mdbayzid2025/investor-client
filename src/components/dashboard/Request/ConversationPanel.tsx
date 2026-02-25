@@ -1,102 +1,201 @@
-import { useGetMessagesQuery } from "@/redux/slice/chatApi";
-import { ArrowLeft, Send } from "lucide-react";
-import { useEffect, useRef } from "react";
+import MuiImageViewer from "@/components/shared/MuiImageViewer";
+import { useGetMessagesQuery, useSendMessageMutation } from "@/redux/slice/chatApi";
+import { getImageUrl } from "@/utils/baseUrl";
+import Grid from "@mui/material/Grid";
+import { ArrowLeft, Image, OctagonX, Send, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 
-function ConversationPanel({
-  conversationId,  
-}: {
-  conversationId: string;
-  
-}) {
-  const { data, isLoading } =
-    useGetMessagesQuery(conversationId);
+function ConversationPanel({ conversationId, setSelectedConversationId }: { conversationId: string; setSelectedConversationId?: any }) {
 
-    console.log("messages", data);
-    
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+    const messagesEndRef = useRef<HTMLDivElement>(null);
+    const [imageFiles, setImageFiles] = useState<File[]>([])
+    const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [data]);
 
-  if (isLoading) {
-    return <p className="p-4 text-gray-400">Loading messages...</p>;
-  }
+    const { data, isLoading } = useGetMessagesQuery(conversationId);
+    const [sendMessage] = useSendMessageMutation()
+    useEffect(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, [data]);
 
-  return (
-    <div className="flex flex-col h-full">
-      {/* Header */}
-      <div className="flex items-center gap-3 px-6 py-4 border-b border-white/10">
-        <button  className="text-gray-400 hover:text-white">
-          <ArrowLeft className="w-4 h-4" />
-        </button>
-        <p className="text-white font-semibold">
-          {data?.data?.initiatorAlias}
-        </p>
-      </div>
+    if (isLoading) {
+        return <p className="p-4 text-gray-400">Loading messages...</p>;
+    }
 
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-6 py-4 space-y-3">
-        {data?.data?.messages.map((msg: any) => (
-          <ChatBubble key={msg._id} msg={msg} />
-        ))}
-        <div ref={messagesEndRef} />
-      </div>
+    const removeImage = (index: number) => {
+        setImageFiles((prev) => prev.filter((_, i) => i !== index))
+    }
 
-      {/* Input (send API can be added later) */}
-      <div className="px-6 py-4 border-t border-white/10">
-        <div className="flex gap-2">
-          <input
-            disabled
-            placeholder="Message sending coming next..."
-            className="flex-1 bg-[#1A1A1A] border border-white/10 rounded-full px-4 py-2 text-sm text-gray-400"
-          />
-          <button
-            disabled
-            className="bg-[#E6C97A] p-2 rounded-full opacity-50"
-          >
-            <Send className="w-4 h-4 text-black" />
-          </button>
+    console.log("data", data);
+
+    // Message Send
+    const handleSendMessage = async (e: any) => {
+        e.preventDefault();
+        let content = e.target.content.value;
+
+
+        const payload = new FormData();
+        payload.append("data", JSON.stringify({ content: e.target.content.value }));
+
+        if (imageFiles?.length) {
+            imageFiles?.map(img => {
+                payload.append("images", img)
+            })
+        }
+        try {
+            const response = await sendMessage({ id: conversationId, payload })?.unwrap();
+
+            if (response?.success) {
+                toast.success(response?.message);
+                setImageFiles([]);
+                content = ""
+            }
+        } catch (error: any) {
+            toast.error(error?.data?.message)
+        }
+    }
+
+    return (
+        <div className="flex flex-col h-full">
+            {/* Header */}
+            {data?.conversation?.myAlias === "Post Owner" && <div onClick={() => setSelectedConversationId("")} className="flex items-center gap-3 px-6 py-4 border-b border-white/10 cursor-pointer">
+                <button className="text-gray-400 hover:text-white">
+                    <ArrowLeft className="w-4 h-4" />
+                </button>
+                <p className="text-white font-semibold">Back </p>
+            </div>}
+
+            {/* Messages */}
+            <div className="flex-1 overflow-y-auto px-6 py-4 space-y-3">
+                {data?.messages.map((msg: any) => (
+                    <ChatBubble key={msg._id} msg={msg} />
+                ))}
+                <div ref={messagesEndRef} />
+            </div>
+
+            {/* -------------- Message Footer ----------- */}
+            {data?.conversation?.status === "closed" ?
+                <div className="px-6 py-6 border-t border-white/10 relative flex items-center justify-center gap-2 text-slate-500">
+                    <OctagonX size={20} />
+                    <p className="text-center  text-sm"> This conversation has been closed by admin</p>
+                </div>
+                : <div className="px-6 border-t border-white/10 relative">
+                    {/* Image Preview */}
+                    {imageFiles.length > 0 && (
+                        <div className="absolute -top-[180%] w-full pr-14  flex gap-3 justify-end overflow-x-auto bg-transparent">
+                            {imageFiles.map((file, index) => (
+                                <div
+                                    key={index}
+                                    className="relative rounded-xl border bg-primary p-2 shadow"
+                                >
+                                    <button
+                                        onClick={() => removeImage(index)}
+                                        className="absolute top-2 right-2 bg-red-600 text-white rounded-full p-1 shadow"
+                                        disabled={loading}
+                                    >
+                                        <X size={14} />
+                                    </button>
+
+                                    <img
+                                        src={URL.createObjectURL(file)}
+                                        alt="preview"
+                                        className="h-24 w-24 rounded-lg object-cover"
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                    <form onSubmit={handleSendMessage}>
+                        <div className="flex items-center gap-2 py-4">
+                            {/* Image Upload */}
+                            <label className={`cursor-pointer ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                                <input
+                                    type="file"
+                                    hidden
+                                    multiple
+                                    accept="image/*"
+                                    disabled={loading}
+                                    onChange={(e) => {
+                                        if (e.target.files) {
+                                            setImageFiles((prev) => [
+                                                ...prev,
+                                                // @ts-ignore
+                                                ...Array.from(e.target.files),
+                                            ])
+                                        }
+                                    }}
+                                />
+                                <Image className="text-gray-500 hover:text-gray-700" />
+                            </label>
+
+                            <input
+                                name="content"
+                                placeholder="Message sending coming next..."
+                                className="flex-1 bg-[#1A1A1A] border border-white/10 rounded-full px-4 py-2 text-sm text-gray-300"
+                            />
+                            <button type="submit" className="bg-primary p-2 rounded-full">
+                                <Send className="w-4 h-4 text-black" />
+                            </button>
+                        </div>
+                    </form>
+                </div>}
+            {/* Input (send API can be added later) */}
+
         </div>
-      </div>
-    </div>
-  );
+    );
 }
 
 
 function ChatBubble({ msg }: { msg: any }) {
-  const isOwn = msg.senderRole === "OWNER";
+    const isOwn = msg.senderRole === "OWNER";
 
-  if (msg.senderRole === "SYSTEM") {
+    if (msg.senderRole === "SYSTEM") {
+        return (
+            <div className="flex justify-center">
+                <div className="bg-[#D4AF370D] border border-[#E6C97A]/30 rounded-xl px-4 py-2 text-xs text-gray-300">
+                    {msg.message}
+                </div>
+            </div>
+        );
+    }
+
     return (
-      <div className="flex justify-center">
-        <div className="bg-[#D4AF370D] border border-[#E6C97A]/30 rounded-xl px-4 py-2 text-xs text-gray-300">
-          {msg.message}
-        </div>
-      </div>
-    );
-  }
+        <div className={`flex flex-col ${msg?.isMine ? "items-end" : "items-start"}`}>
+            <div className="flex items-center gap-2">
+                {msg?.images?.length > 0 &&
+                    msg?.images?.map((img: string, i: number) =>
+                        <Grid size={{ xs: 4, md: 4 }} key={i}>
+                            <MuiImageViewer
+                                src={`${getImageUrl()}${img}`}
+                                alt={`Image ${i + 1}`}
+                                height={100}
+                                style={{ borderRadius: 8, objectFit: 'cover', }}
+                            />
+                        </Grid>
+                    )
+                }
+            </div>
+            <div
+                className={`max-w-[75%] px-4 py-2 rounded-2xl text-sm ${isOwn
+                    ? "bg-[#E6C97A] text-black rounded-br-md"
+                    : "bg-[#1A1A1A] text-gray-300 rounded-bl-md border border-white/10"
+                    }`}
+            >
 
-  return (
-    <div className={`flex ${isOwn ? "justify-end" : "justify-start"}`}>
-      <div
-        className={`max-w-[75%] px-4 py-2 rounded-2xl text-sm ${isOwn
-          ? "bg-[#E6C97A] text-black rounded-br-md"
-          : "bg-[#1A1A1A] text-gray-300 rounded-bl-md border border-white/10"
-          }`}
-      >
-        {!isOwn && (
-          <p className="text-[10px] text-gray-400 mb-1">
-            {msg.senderAlias}
-          </p>
-        )}
-        {msg.content}
-        <p className="text-[9px] text-gray-500 mt-1">
-          {new Date(msg.createdAt).toLocaleTimeString()}
-        </p>
-      </div>
-    </div>
-  );
+
+                {!isOwn && (
+                    <p className="text-[10px] text-gray-400 mb-1">
+                        {msg.senderAlias}
+                    </p>
+                )}
+                {msg.content}
+                <p className="text-[9px] text-gray-500 mt-1">
+                    {new Date(msg.createdAt).toLocaleTimeString()}
+                </p>
+            </div>
+        </div>
+    );
 }
 
 export default ConversationPanel;
