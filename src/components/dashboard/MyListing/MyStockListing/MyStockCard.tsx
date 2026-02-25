@@ -39,7 +39,7 @@ export default function MyStockCard({
   return (
     <div className="bg-[#111111] border border-primary/20 rounded-lg overflow-hidden group hover:border-primary/50 transition-all duration-300 flex flex-col h-full">
       <Link
-        href={`/user-dashboard/stock/${item._id}`}
+        href={`/user-dashboard/my-listing/stock/${item._id}`}
         className="block relative h-48 sm:h-56 lg:h-64 overflow-hidden cursor-pointer"
       >
         {/* Blurred Image Overlay */}
@@ -60,7 +60,7 @@ export default function MyStockCard({
       </Link>
 
       <div className="p-4 sm:p-6 flex flex-col grow">
-        <Link href={`/user-dashboard/stock/${item._id}`} className="block">
+        <Link href={`/user-dashboard/my-listing/stock/${item._id}`} className="block">
           <h3 className="text-lg sm:text-xl font-serif text-white mb-2 hover:text-primary transition-colors">
             {item.title}
           </h3>

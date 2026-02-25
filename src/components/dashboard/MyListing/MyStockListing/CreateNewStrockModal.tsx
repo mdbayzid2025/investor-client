@@ -20,11 +20,13 @@ export default function CreateNewStrockModal({ open, onClose }: { open: boolean,
   if (!open) return null;
   const router = useRouter();
 
+  // Add "size" to formData state
   const [formData, setFormData] = useState({
     category: "Residential",
     title: "",
     description: "",
-    priceRange: "",
+    price: "",        // renamed from priceRange
+    size: "",         // new field
     location: "",
     features: [""],
     galleryImages: [] as File[],
@@ -82,11 +84,33 @@ export default function CreateNewStrockModal({ open, onClose }: { open: boolean,
     setGalleryPreviews((prev) => prev.filter((_, i) => i !== index));
   };
 
+  // Corrected handleSubmit
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Submit stock listing:", formData);
-    onClose()
-    // router.push("/dashboard/my-listings");
+
+    const payload = new FormData();
+
+    // Build the "data" JSON object matching expected schema
+    const data = {
+      title: formData.title,
+      price: formData.price,
+      location: formData.location,
+      size: formData.size,
+      description: formData.description,
+      features: formData.features.filter((f) => f.trim() !== ""), // remove empty entries
+    };
+
+    payload.append("data", JSON.stringify(data));
+
+    // Append each image under key "images"
+    formData.galleryImages.forEach((file) => {
+      payload.append("images", file);
+    });
+
+    console.log("Submitting payload...");
+    // Example: await fetch("/api/listings", { method: "POST", body: payload });
+
+    onClose();
   };
 
   return (
@@ -98,8 +122,8 @@ export default function CreateNewStrockModal({ open, onClose }: { open: boolean,
             <h1 className="text-4xl font-serif text-primary mb-2">Add New Stock Listing</h1>
             <p className="text-gray-400">Create a new property listing for the exclusive marketplace</p>
           </div>
-          <Button onClick={()=>onClose()}>
-          <X color="white"/>
+          <Button onClick={() => onClose()}>
+            <X color="white" />
           </Button>
         </div>
 
@@ -165,16 +189,30 @@ export default function CreateNewStrockModal({ open, onClose }: { open: boolean,
               {/* Price Range */}
               <div>
                 <label className="block text-sm text-gray-400 mb-2">Price Range *</label>
+                // In Financial Details section - change name and value
                 <input
                   type="text"
-                  name="priceRange"
-                  value={formData.priceRange}
+                  name="price"              // was "priceRange"
+                  value={formData.price}    // was formData.priceRange
                   onChange={handleChange}
                   required
                   placeholder="e.g., R 5M - R 7M or $5M - $7M"
                   className="w-full bg-[#0A0A0A] border border-primary/40 rounded-lg px-4 py-3 text-white focus:border-primary outline-none"
                 />
               </div>
+            </div>
+            {/* Size */}
+            <div>
+              <label className="block text-sm text-gray-400 mb-2">Size *</label>
+              <input
+                type="text"
+                name="size"
+                value={formData.size}
+                onChange={handleChange}
+                required
+                placeholder="e.g., 50 - 100 hectares"
+                className="w-full bg-[#0A0A0A] border border-primary/40 rounded-lg px-4 py-3 text-white focus:border-primary outline-none"
+              />
             </div>
           </div>
 
@@ -293,7 +331,7 @@ export default function CreateNewStrockModal({ open, onClose }: { open: boolean,
             </Button>
             <button
               type="button"
-              onClick={()=>onClose()}
+              onClick={() => onClose()}
               className="flex-1 sm:flex-none px-6 py-3 bg-[#1A1A1A] text-white border border-primary/20 rounded-lg hover:border-primary hover:bg-[#2A2A2A] transition-all"
             >
               Cancel
