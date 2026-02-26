@@ -11,6 +11,13 @@ const requestApi = baseApi.injectEndpoints({
             }),
             providesTags: ["request"],
         }),
+        ownerRequestAnalytics: build.query({
+            query: () => ({
+                url: `/requests/request/analysis${location.search}`,
+                method: "GET",
+            }),
+            providesTags: ["request"],
+        }),
         getMyRequests: build.query({
             query: () => ({
                 url: `/requests/my-listing${location.search}`,
@@ -36,7 +43,7 @@ const requestApi = baseApi.injectEndpoints({
         }),
         updateRequest: build.mutation({
             query: (data) => ({
-                url: `/requests/${data?.id}`,
+                url: `/requests/update/${data?.id}`,
                 method: "PATCH",
                 body: data,
                 headers: {
@@ -47,7 +54,7 @@ const requestApi = baseApi.injectEndpoints({
         }),
         deleteRequest: build.mutation({
             query: (id: string) => ({
-                url: `requests/delete/${id}`,
+                url: `/requests/delete/${id}`,
                 method: "DELETE",
                 headers: {
                     Authorization: `Bearer ${Cookies.get("accessToken")}`,
@@ -78,6 +85,7 @@ const requestApi = baseApi.injectEndpoints({
 
 export const {
     useGetRequestsQuery,
+    useOwnerRequestAnalyticsQuery,
     useGetMyRequestsQuery,
     useGetRequestByIdQuery,
     useGetSavedRequestsQuery,

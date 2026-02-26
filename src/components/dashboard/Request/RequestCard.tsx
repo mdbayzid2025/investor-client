@@ -1,14 +1,12 @@
 import { getImageUrl } from '@/utils/baseUrl';
 import getStringToAvater from '@/utils/getStringToAvater';
 import { Avatar } from '@mui/material';
-import { MessageCircleMore } from 'lucide-react'
+import { MessageCircleMore } from 'lucide-react';
 import Image from 'next/image';
-import React, { useState } from 'react'
 import { formatChatTime } from '../Shared/FormatChatTime ';
 
-const RequestCard = ({req, setOpenConversation, setSelectRequest}: any) => {
+const RequestCard = ({req,  handleViewConversation, setSelectRequest}: any) => {
 
-  console.log("reqreq", req);
   
   return (
     <div      
@@ -63,7 +61,7 @@ const RequestCard = ({req, setOpenConversation, setSelectRequest}: any) => {
           </span>
         </div>
         <button
-          onClick={() => {setOpenConversation(true); setSelectRequest(req)}}
+          onClick={() => {setSelectRequest(req); handleViewConversation(req)}}
           className="text-sm text-primary hover:underline w-fit cursor-pointer flex items-center gap-1"
         >
           <MessageCircleMore /> Start Conversation

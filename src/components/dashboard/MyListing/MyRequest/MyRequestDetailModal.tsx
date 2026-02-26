@@ -1,81 +1,74 @@
-import React, { useState } from "react";
+import React from "react";
 
 import {
   AlertCircle,
   ArrowLeft,
-  CheckCheck,
-  ChevronRight,
-  X as CloseIcon,
   DollarSign,
   Eye,
   MapPin,
   MessageSquare,
-  Send,
-  Shield,
   Tag,
-  Users
+  Users,
+  X,
 } from 'lucide-react';
 
 import {
-  Alert,
   Avatar,
   Box,
   Button,
   Card,
   CardContent,
   Chip,
-  Drawer,
   Grid,
-  IconButton,
   Paper,
   Stack,
-  TextField,
-  Typography
+  Typography,
 } from '@mui/material';
 
 import { styled } from '@mui/material/styles';
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 
-// Assuming MOCK_REQUESTS is the same
-// import { MOCK_REQUESTS } from '../data/mockData';
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+interface RequestListing {
+  _id: string;
+  title: string;
+  topic: string;
+  urgency: string;
+  budgetRange: string;
+  description: string;
+  createdBy: {
+    _id: string;
+    name: string;
+    role: string;
+    email: string;
+    image?: string;
+  };
+  status: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  location?: string;
+  responses?: number;
+  comments?: { user: string; text: string; date: string }[];
+}
+
+// ─── Urgency Config ───────────────────────────────────────────────────────────
 
 const urgencyConfig: Record<
   string,
-  { label: string; color: string; bg: string; dot: string }
+  { label: string; color: string; bg: string }
 > = {
-  High: {
-    label: 'High Urgency',
-    color: '#f87171',
-    bg: 'rgba(248, 113, 113, 0.1)',
-    dot: '#f87171',
-  },
-  Medium: {
-    label: 'Medium Urgency',
-    color: '#fb923c',
-    bg: 'rgba(251, 146, 60, 0.1)',
-    dot: '#fb923c',
-  },
-  Low: {
-    label: 'Low Urgency',
-    color: '#9ca3af',
-    bg: 'rgba(156, 163, 175, 0.1)',
-    dot: '#9ca3af',
-  },
+  urgent: { label: 'High Urgency', color: '#f87171', bg: 'rgba(248, 113, 113, 0.1)' },
+  high: { label: 'High Urgency', color: '#f87171', bg: 'rgba(248, 113, 113, 0.1)' },
+  medium: { label: 'Medium Urgency', color: '#fb923c', bg: 'rgba(251, 146, 60, 0.1)' },
+  low: { label: 'Low Urgency', color: '#9ca3af', bg: 'rgba(156, 163, 175, 0.1)' },
 };
 
 const gold = '#D4AF37';
-const goldDark = '#b8962e';
-
-const GoldChip = styled(Chip)({
-  backgroundColor: `${gold}15`,
-  color: gold,
-  borderColor: `${gold}30`,
-  '& .MuiChip-icon': { color: gold },
-});
 
 const OwnerBadge = styled(Box)({
-  backgroundColor: `${gold}10`,
+  backgroundColor: `${gold}15`,
   border: `1px solid ${gold}30`,
   color: gold,
   borderRadius: 8,
@@ -86,6 +79,24 @@ const OwnerBadge = styled(Box)({
   fontSize: '0.875rem',
 });
 
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function formatDate(isoString: string): string {
+  if (!isoString) return '';
+  const date = new Date(isoString);
+  const now = new Date();
+  const diffHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
+  const diffDays = Math.floor(diffHours / 24);
+  if (diffHours < 1) return 'Just now';
+  if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+  if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+  return date.toLocaleDateString();
+}
+
+function getRequestId(id: string): string {
+  return id ? id.slice(-6).toUpperCase() : 'N/A';
+}
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function MyRequestDetailModal({
@@ -93,80 +104,64 @@ export default function MyRequestDetailModal({
   onClose,
   listing,
   onDelete,
-}: any) {
- 
-  const router = useRouter()
-  const [threadOpen, setThreadOpen] = useState(false);
-  const [message, setMessage] = useState('');
+}: {
+  open: boolean;
+  onClose: () => void;
+  listing: RequestListing | null;
+  onDelete?: (id: string) => void;
+}) {
+  if (!open) return null;
 
-  if(!open) return null
-  // Replace with real data fetching in production
-  const requestItem = MOCK_REQUESTS.find((item) => String(item.id) === "1");
-
-  const [messages, setMessages] = useState([
-    // same initial messages as in your code...
-    { id: 1, sender: 'Seller_001', role: 'seller', text: '...', timestamp: '10:30', status: 'delivered' },
-    // ... rest of messages
-  ]);
-
-  const handleSend = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!message.trim()) return;
-
-    const newMsg = {
-      id: messages.length + 1,
-      sender: requestItem?.user || 'You',
-      role: 'user',
-      text: message,
-      timestamp: new Date().toLocaleTimeString('en-ZA', { hour: '2-digit', minute: '2-digit' }),
-      status: 'sent',
-    };
-
-    setMessages((prev) => [...prev, newMsg]);
-    setMessage('');
-  };
+  const requestItem = listing;
 
   if (!requestItem) {
     return (
-      <Box sx={{ p: 4, textAlign: 'center', color: 'text.secondary' }}>
-        <Typography variant="h5" color="white" gutterBottom>
-          Request Not Found
-        </Typography>
-        <Link href="/dashboard/my-listings" style={{ color: gold, textDecoration: 'underline' }}>
-          Return to My Listings
-        </Link>
-      </Box>
+      <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+        <Box sx={{ p: 4, textAlign: 'center' }}>
+          <Typography variant="h5" sx={{ color: 'white' }} gutterBottom>
+            Request Not Found
+          </Typography>
+          <Link href="/dashboard/my-listings" style={{ color: gold, textDecoration: 'underline' }}>
+            Return to My Listings
+          </Link>
+        </Box>
+      </div>
     );
   }
 
-  const urgency = urgencyConfig[requestItem.urgency] ?? urgencyConfig.Low;
-  const latestMsg = [...messages].reverse().find((m) => m.role !== 'user');
+  const urgencyKey = (requestItem.urgency ?? '').toLowerCase();
+  const urgency = urgencyConfig[urgencyKey] ?? urgencyConfig.low;
+  const comments = requestItem.comments ?? [];
+  const responsesCount = requestItem.responses ?? comments.length;
 
   return (
     <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
       <div className="bg-[#111111] border border-primary/20 rounded-xl w-full max-w-5xl max-h-[90vh] overflow-y-auto">
 
         <Box sx={{ p: 3, maxWidth: 1200, mx: 'auto', pb: 10 }}>
-          {/* Back button */}
-          <Button
-            startIcon={<ArrowLeft size={16} />}
-            
-            sx={{ color: 'text.secondary', mb: 3, textTransform: 'none' }}
-          >
-            Back to My Listings
-          </Button>
+
+          <Box sx={{display: "flex", justifyContent: "space-between"}}>
 
           {/* Owner badge */}
           <OwnerBadge sx={{ mb: 4 }}>
             <AlertCircle size={16} />
             <Typography variant="body2">
-              Owner View — Only you can see full request details & conversation.
+              Owner View — Only you can see full request details.
             </Typography>
           </OwnerBadge>
 
+          <Button            
+            onClick={onClose}
+            sx={{ color: 'white', mb: 3, textTransform: 'none' }}
+          >
+            <X />
+          </Button>
+          </Box>
           <Grid container spacing={3}>
-            {/* Left column – main content */}
-            <Grid size={{xs: 12, lg: 8}}>
+
+            {/* ── Left column ── */}
+            <Grid size={{ xs: 12, lg: 8 }}>
+
               {/* Main card */}
               <Card sx={{ bgcolor: '#111', border: `1px solid ${gold}20`, mb: 3 }}>
                 <CardContent>
@@ -178,12 +173,12 @@ export default function MyRequestDetailModal({
                       <Stack direction="row" spacing={1.5} alignItems="center">
                         <Stack direction="row" spacing={0.5} alignItems="center">
                           <Tag size={14} color={gold} />
-                          <Typography variant="body2" color="text.secondary">
+                          <Typography variant="body2" sx={{ color: 'white' }}>
                             {requestItem.topic}
                           </Typography>
                         </Stack>
-                        <Typography variant="body2" color="text.secondary">
-                          • Posted {requestItem.date}
+                        <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)' }}>
+                          • Posted {formatDate(requestItem.createdAt)}
                         </Typography>
                       </Stack>
                     </Box>
@@ -196,14 +191,6 @@ export default function MyRequestDetailModal({
                         color: urgency.color,
                         border: `1px solid ${urgency.color}30`,
                         fontWeight: 500,
-                        '&::before': {
-                          content: '""',
-                          width: 8,
-                          height: 8,
-                          borderRadius: '50%',
-                          bgcolor: urgency.color,
-                          mr: 1,
-                        },
                       }}
                     />
                   </Box>
@@ -222,11 +209,11 @@ export default function MyRequestDetailModal({
                     }}
                   >
                     <DollarSign size={18} color={gold} />
-                    <Typography variant="caption" color="text.secondary" sx={{ textTransform: 'uppercase', letterSpacing: 1 }}>
+                    <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: 1 }}>
                       Budget
                     </Typography>
                     <Typography variant="body1" sx={{ color: gold, fontFamily: 'serif', ml: 'auto' }}>
-                      {requestItem.budget}
+                      {requestItem.budgetRange}
                     </Typography>
                   </Paper>
 
@@ -234,19 +221,13 @@ export default function MyRequestDetailModal({
                   {requestItem.location && (
                     <Paper
                       variant="outlined"
-                      sx={{
-                        p: 2,
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 1.5,
-                        borderColor: `${gold}15`,
-                      }}
+                      sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 1.5, borderColor: `${gold}15` }}
                     >
-                      <MapPin size={18} color="text.secondary" />
-                      <Typography variant="caption" color="text.secondary" sx={{ textTransform: 'uppercase', letterSpacing: 1, mr: 1 }}>
+                      <MapPin size={18} color="#9ca3af" />
+                      <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: 1, mr: 1 }}>
                         Location
                       </Typography>
-                      <Typography color="text.primary">{requestItem.location}</Typography>
+                      <Typography sx={{ color: 'white' }}>{requestItem.location}</Typography>
                     </Paper>
                   )}
                 </CardContent>
@@ -255,23 +236,23 @@ export default function MyRequestDetailModal({
               {/* Description */}
               <Card sx={{ bgcolor: '#111', border: `1px solid ${gold}20`, mb: 3 }}>
                 <CardContent>
-                  <Typography variant="overline" color="text.secondary" gutterBottom>
+                  <Typography variant="overline" sx={{ color: 'rgba(255,255,255,0.5)' }} gutterBottom>
                     Request Details
                   </Typography>
-                  <Typography variant="body1" color="text.primary" sx={{ whiteSpace: 'pre-wrap' }}>
-                    {requestItem.content}
+                  <Typography variant="body1" sx={{ color: 'white', whiteSpace: 'pre-wrap' }}>
+                    {requestItem.description}
                   </Typography>
                 </CardContent>
               </Card>
 
-              {/* Responses */}
+              {/* Comments / Responses */}
               <Card sx={{ bgcolor: '#111', border: `1px solid ${gold}20` }}>
                 <CardContent>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                    <Typography variant="overline" color="text.secondary">
-                      Responses ({requestItem.comments?.length ?? 0})
+                    <Typography variant="overline" sx={{ color: 'rgba(255,255,255,0.5)' }}>
+                      Responses ({comments.length})
                     </Typography>
-                    {requestItem.comments?.length > 0 && (
+                    {comments.length > 0 && (
                       <Chip
                         label="Active"
                         size="small"
@@ -282,9 +263,9 @@ export default function MyRequestDetailModal({
                     )}
                   </Box>
 
-                  {requestItem.comments?.length > 0 ? (
+                  {comments.length > 0 ? (
                     <Stack spacing={2}>
-                      {requestItem.comments.map((c: any, i: number) => (
+                      {comments.map((c: any, i: number) => (
                         <Box key={i} sx={{ display: 'flex', gap: 2 }}>
                           <Avatar sx={{ bgcolor: 'grey.700', width: 36, height: 36, fontSize: '0.875rem' }}>
                             {c.user.slice(0, 2).toUpperCase()}
@@ -300,7 +281,7 @@ export default function MyRequestDetailModal({
                             <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
                               <Typography
                                 variant="subtitle2"
-                                sx={{ color: c.user === 'Admin' ? gold : 'text.primary' }}
+                                sx={{ color: c.user === 'Admin' ? gold : 'white' }}
                               >
                                 {c.user}
                                 {c.user === 'Admin' && (
@@ -311,11 +292,11 @@ export default function MyRequestDetailModal({
                                   />
                                 )}
                               </Typography>
-                              <Typography variant="caption" color="text.secondary">
+                              <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.4)' }}>
                                 {c.date}
                               </Typography>
                             </Box>
-                            <Typography variant="body2" color="text.secondary">
+                            <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.75)' }}>
                               {c.text}
                             </Typography>
                           </Paper>
@@ -323,7 +304,7 @@ export default function MyRequestDetailModal({
                       ))}
                     </Stack>
                   ) : (
-                    <Typography variant="body2" color="text.secondary" fontStyle="italic">
+                    <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.4)' }} fontStyle="italic">
                       No responses yet.
                     </Typography>
                   )}
@@ -331,46 +312,45 @@ export default function MyRequestDetailModal({
               </Card>
             </Grid>
 
-            {/* Right sidebar */}
-            <Grid size={{xs: 12, lg:4}}>
+            {/* ── Right sidebar ── */}
+            <Grid size={{ xs: 12, lg: 4 }}>
               <Stack spacing={3}>
-                {/* Stats */}
+
+                {/* Performance */}
                 <Card sx={{ bgcolor: '#111', border: `1px solid ${gold}20` }}>
                   <CardContent>
-                    <Typography variant="overline" color="text.secondary" gutterBottom>
+                    <Typography variant="overline" sx={{ color: 'rgba(255,255,255,0.5)' }} gutterBottom>
                       Performance
                     </Typography>
                     <Stack spacing={2}>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                         <Stack direction="row" spacing={1} alignItems="center">
-                          <Eye size={16} />
-                          <Typography variant="body2" color="text.secondary">
-                            Views
-                          </Typography>
+                          <Eye size={16} color="#9ca3af" />
+                          <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.6)' }}>Status</Typography>
                         </Stack>
-                        <Typography fontWeight="medium">
-                          {requestItem.id === 1 ? 24 : requestItem.id === 2 ? 18 : 45}
-                        </Typography>
+                        <Chip
+                          label={requestItem.status}
+                          size="small"
+                          sx={{
+                            bgcolor: requestItem.status === 'pending' ? 'rgba(251,191,36,0.1)' : 'rgba(74,222,128,0.1)',
+                            color: requestItem.status === 'pending' ? '#fbbf24' : '#4ade80',
+                            textTransform: 'capitalize',
+                          }}
+                        />
                       </Box>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                         <Stack direction="row" spacing={1} alignItems="center">
-                          <Users size={16} />
-                          <Typography variant="body2" color="text.secondary">
-                            Responses
-                          </Typography>
+                          <Users size={16} color="#9ca3af" />
+                          <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.6)' }}>Responses</Typography>
                         </Stack>
-                        <Typography color={gold} fontWeight="medium">
-                          {requestItem.responses}
-                        </Typography>
+                        <Typography sx={{ color: gold, fontWeight: 600 }}>{responsesCount}</Typography>
                       </Box>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                         <Stack direction="row" spacing={1} alignItems="center">
-                          <MessageSquare size={16} />
-                          <Typography variant="body2" color="text.secondary">
-                            Messages
-                          </Typography>
+                          <MessageSquare size={16} color="#9ca3af" />
+                          <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.6)' }}>Comments</Typography>
                         </Stack>
-                        <Typography fontWeight="medium">{messages.length}</Typography>
+                        <Typography sx={{ color: 'white', fontWeight: 500 }}>{comments.length}</Typography>
                       </Box>
                     </Stack>
                   </CardContent>
@@ -379,306 +359,55 @@ export default function MyRequestDetailModal({
                 {/* Request Info */}
                 <Card sx={{ bgcolor: '#111', border: `1px solid ${gold}20` }}>
                   <CardContent>
-                    <Typography variant="overline" color="text.secondary" gutterBottom>
+                    <Typography variant="overline" sx={{ color: 'rgba(255,255,255,0.5)' }} gutterBottom>
                       Request Info
                     </Typography>
-                    <Stack spacing={1.5} sx={{ fontSize: '0.875rem' }}>
+                    <Stack spacing={1.5}>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <Typography color="text.secondary">Request ID</Typography>
-                        <Typography fontFamily="monospace">REQ-00{requestItem.id}</Typography>
+                        <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)' }}>Request ID</Typography>
+                        <Typography variant="body2" sx={{ color: 'white', fontFamily: 'monospace' }}>
+                          REQ-{getRequestId(requestItem._id)}
+                        </Typography>
                       </Box>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <Typography color="text.secondary">Topic</Typography>
-                        <Typography>{requestItem.topic}</Typography>
+                        <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)' }}>Topic</Typography>
+                        <Typography variant="body2" sx={{ color: 'white' }}>{requestItem.topic}</Typography>
                       </Box>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Typography color="text.secondary">Urgency</Typography>
+                        <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)' }}>Urgency</Typography>
                         <Chip
-                          label={requestItem.urgency}
+                          label={urgency.label}
                           size="small"
-                          sx={{
-                            bgcolor: urgency.bg,
-                            color: urgency.color,
-                            borderColor: `${urgency.color}40`,
-                          }}
+                          sx={{ bgcolor: urgency.bg, color: urgency.color, borderColor: `${urgency.color}40` }}
                         />
                       </Box>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <Typography color="text.secondary">Posted by</Typography>
-                        <Typography>{requestItem.user}</Typography>
+                        <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)' }}>Posted by</Typography>
+                        <Typography variant="body2" sx={{ color: 'white' }}>
+                          {requestItem.createdBy?.name ?? '—'}
+                        </Typography>
+                      </Box>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)' }}>Role</Typography>
+                        <Typography variant="body2" sx={{ color: 'white', textTransform: 'capitalize' }}>
+                          {requestItem.createdBy?.role?.toLowerCase() ?? '—'}
+                        </Typography>
+                      </Box>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)' }}>Active</Typography>
+                        <Typography variant="body2" sx={{ color: requestItem.isActive ? '#4ade80' : '#f87171' }}>
+                          {requestItem.isActive ? 'Yes' : 'No'}
+                        </Typography>
                       </Box>
                     </Stack>
                   </CardContent>
                 </Card>
 
-                {/* Open Thread Button */}
-                <Card sx={{ bgcolor: '#111', border: `1px solid ${gold}30` }}>
-                  <CardContent>
-                    <Typography variant="overline" color="text.secondary" gutterBottom>
-                      Conversation Thread
-                    </Typography>
-
-                    {latestMsg && (
-                      <Paper
-                        variant="outlined"
-                        sx={{
-                          p: 2,
-                          bgcolor: '#0d0d0d',
-                          borderColor: 'rgba(255,255,255,0.08)',
-                          mb: 2,
-                        }}
-                      >
-                        <Typography variant="caption" color="text.secondary" gutterBottom>
-                          {latestMsg.sender} · {latestMsg.timestamp}
-                        </Typography>
-                        <Typography variant="body2" sx={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                          {latestMsg.text}
-                        </Typography>
-                      </Paper>
-                    )}
-
-                    <Button
-                      fullWidth
-                      variant="contained"
-                      sx={{
-                        bgcolor: gold,
-                        color: 'black',
-                        '&:hover': { bgcolor: '#F4CF57' },
-                        py: 1.5,
-                      }}
-                      endIcon={<ChevronRight />}
-                      onClick={() => setThreadOpen(true)}
-                    >
-                      Open Thread ({messages.length} msgs)
-                    </Button>
-
-                    <Stack direction="row" spacing={1} justifyContent="center" sx={{ mt: 2 }}>
-                      <Shield size={14} color={gold} />
-                      <Typography variant="caption" color="text.secondary">
-                        End-to-end monitored · No contact info allowed
-                      </Typography>
-                    </Stack>
-                  </CardContent>
-                </Card>
               </Stack>
             </Grid>
           </Grid>
-
-          {/* ── Thread Drawer ── */}
-          <Drawer
-            anchor="right"
-            open={threadOpen}
-            onClose={() => setThreadOpen(false)}
-            PaperProps={{
-              sx: {
-                width: { xs: '100%', sm: 480 },
-                bgcolor: '#0a0a0a',
-                borderLeft: `1px solid ${gold}20`,
-              },
-            }}
-          >
-            {/* Header */}
-            <Box sx={{ p: 3, borderBottom: `1px solid ${gold}20`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Box>
-                <Typography variant="h6" sx={{ color: 'white', fontFamily: 'serif' }}>
-                  {requestItem.title}
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  {messages.length} messages · Active
-                </Typography>
-              </Box>
-              <IconButton onClick={() => setThreadOpen(false)} sx={{ color: 'text.secondary' }}>
-                <CloseIcon />
-              </IconButton>
-            </Box>
-
-            {/* Admin notice */}
-            <Alert
-              severity="info"
-              icon={<Shield size={18} />}
-              sx={{
-                m: 2,
-                bgcolor: `${gold}08`,
-                border: `1px solid ${gold}20`,
-                color: 'text.primary',
-                '& .MuiAlert-icon': { color: gold },
-              }}
-            >
-              All messages monitored. No personal contact details allowed.
-            </Alert>
-
-            {/* Messages list */}
-            <Box sx={{ flex: 1, overflowY: 'auto', p: 2 }}>
-              <Stack spacing={3}>
-                {messages.map((msg) => (
-                  <Box
-                    key={msg.id}
-                    sx={{
-                      alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start',
-                      maxWidth: '80%',
-                    }}
-                  >
-                    <Stack
-                      direction="row"
-                      spacing={1}
-                      alignItems="center"
-                      justifyContent={msg.role === 'user' ? 'flex-end' : 'flex-start'}
-                      sx={{ mb: 0.5 }}
-                    >
-                      <Typography
-                        variant="caption"
-                        sx={{
-                          color:
-                            msg.role === 'admin'
-                              ? gold
-                              : msg.role === 'user'
-                                ? 'primary.light'
-                                : 'text.secondary',
-                          fontWeight: msg.role === 'admin' ? 600 : 500,
-                        }}
-                      >
-                        {msg.role === 'user' ? 'You' : msg.sender}
-                        {msg.role === 'admin' && (
-                          <Chip
-                            label="ADMIN"
-                            size="small"
-                            sx={{ ml: 1, height: 18, fontSize: '0.625rem', bgcolor: `${gold}20`, color: gold }}
-                          />
-                        )}
-                      </Typography>
-                      <Typography variant="caption" color="text.disabled">
-                        {msg.timestamp}
-                      </Typography>
-                    </Stack>
-
-                    <Paper
-                      sx={{
-                        p: 2,
-                        borderRadius: 3,
-                        bgcolor:
-                          msg.role === 'admin'
-                            ? `${gold}10`
-                            : msg.role === 'user'
-                              ? 'primary.dark'
-                              : '#1a1a1a',
-                        border:
-                          msg.role === 'admin'
-                            ? `1px solid ${gold}20`
-                            : msg.role === 'user'
-                              ? '1px solid rgba(59,130,246,0.3)'
-                              : '1px solid rgba(255,255,255,0.08)',
-                        color: msg.role === 'user' ? 'white' : 'text.primary',
-                      }}
-                    >
-                      <Typography variant="body2">{msg.text}</Typography>
-
-                      {msg.role === 'user' && (
-                        <Box sx={{ textAlign: 'right', mt: 0.5 }}>
-                          <CheckCheck
-                            size={14}
-                            color={msg.status === 'delivered' ? '#60a5fa' : 'text.disabled'}
-                          />
-                        </Box>
-                      )}
-                    </Paper>
-                  </Box>
-                ))}
-              </Stack>
-            </Box>
-
-            {/* Message input */}
-            <Box sx={{ p: 2, borderTop: `1px solid ${gold}15` }}>
-              <form onSubmit={handleSend}>
-                <TextField
-                  fullWidth
-                  multiline
-                  minRows={2}
-                  maxRows={4}
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  placeholder="Type your message…"
-                  variant="outlined"
-                  InputProps={{
-                    endAdornment: (
-                      <IconButton
-                        type="submit"
-                        disabled={!message.trim()}
-                        sx={{
-                          bgcolor: gold,
-                          color: 'black',
-                          '&:hover': { bgcolor: '#F4CF57' },
-                          '&.Mui-disabled': { bgcolor: 'action.disabledBackground' },
-                        }}
-                      >
-                        <Send size={18} />
-                      </IconButton>
-                    ),
-                  }}
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      bgcolor: '#111',
-                      borderRadius: 3,
-                      '& fieldset': { borderColor: `${gold}30` },
-                      '&:hover fieldset': { borderColor: `${gold}60` },
-                      '&.Mui-focused fieldset': { borderColor: gold },
-                    },
-                  }}
-                />
-              </form>
-            </Box>
-          </Drawer>
         </Box>
-
       </div>
     </div>
   );
 }
-
-
-const MOCK_REQUESTS = [
-  {
-    id: 1,
-    user: 'Investor042',
-    topic: 'Vacant Land',
-    title: 'Coastal Development Land Needed',
-    content: 'Looking for 50+ hectares near coastal region for luxury development. Budget open. Ideally looking for land with existing zoning rights or potential for rezoning. Access to main roads is crucial.',
-    budget: '$2M - $5M',
-    location: 'Coastal Region, Western Cape',
-    urgency: 'High',
-    date: '2 hours ago',
-    responses: 3,
-    comments: [
-      { user: 'Agent007', text: 'I have a listing that matches this description near Mossel Bay.', date: '1 hour ago' },
-      { user: 'Investor042', text: 'Please send teaser details.', date: '45 mins ago' },
-      { user: 'Admin', text: 'Reminder: Share details via the secure portal only.', date: '30 mins ago' }
-    ]
-  },
-  {
-    id: 2,
-    user: 'Developer009',
-    topic: 'Hotels',
-    title: 'Distressed Hotel Assets',
-    content: 'Seeking boutique hotel opportunities in Cape Town CBD. Distressed assets considered. We are looking for properties that can be turned around with renovation and rebranding.',
-    budget: '$10M - $15M',
-    location: 'Cape Town CBD',
-    urgency: 'Medium',
-    date: '5 hours ago',
-    responses: 1,
-    comments: [
-      { user: 'Seller88', text: 'We are privately selling a 4-star hotel in the city bowl.', date: '3 hours ago' }
-    ]
-  },
-  {
-    id: 3,
-    user: 'Investor101',
-    topic: 'Farms',
-    title: 'Macadamia Farm',
-    content: 'Macadamia farm with existing infrastructure required. Mpumalanga region preferred. Must have water rights and established orchards (5+ years).',
-    budget: '$5M - $8M',
-    location: 'Mpumalanga',
-    urgency: 'Low',
-    date: '1 day ago',
-    responses: 8,
-    comments: []
-  }
-];

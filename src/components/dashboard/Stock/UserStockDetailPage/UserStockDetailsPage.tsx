@@ -18,11 +18,12 @@ import { useGetStockByIdQuery } from "@/redux/slice/stocksApi";
 import { getImageUrl } from "@/utils/baseUrl";
 
 // ────────────────────────────────────────────────
-//  Import your RTK Query hook
+//  Import  RTK Query hook
 // ────────────────────────────────────────────────
 
-export default function StockDetailsPage() {
-  const { id } = useParams<{ id: string }>();
+export default function UserStockDetailsPage() {
+  const { stockId } = useParams<{ stockId: string }>();  
+  
   const [interested, setInterested] = useState(false);
 
   // Fetch stock data using RTK Query
@@ -31,8 +32,8 @@ export default function StockDetailsPage() {
     isLoading,
     isError,
     error,
-  } = useGetStockByIdQuery(id, {
-    skip: !id, // prevent query if no ID
+  } = useGetStockByIdQuery(stockId, {
+    skip: !stockId, // prevent query if no ID
   });
 
   // ─── Loading state ───────────────────────────────────────

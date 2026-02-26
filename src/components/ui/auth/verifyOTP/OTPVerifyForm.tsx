@@ -28,14 +28,19 @@ export default function OTPVerifyForm() {
 
   const secondsLeft = useOtpTimer(resetKey);
 
+  console.log("secondsLeft", secondsLeft);
+  
   useEffect(() => {
     if (secondsLeft === null) return;
 
-    if (secondsLeft <= 0) {
-      setIsExpired(true);
-    } else {
-      setTimeLeft(secondsLeft);
-    }
+    // if (secondsLeft <= 0) {
+    //   setIsExpired(true);
+    // } else {
+    //   setTimeLeft(secondsLeft);
+    // }
+
+    setTimeLeft(secondsLeft);
+
   }, [secondsLeft]);
 
   const formatTime = (seconds: number): string => {

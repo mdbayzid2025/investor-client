@@ -10,6 +10,13 @@ const stocksApi = baseApi.injectEndpoints({
             }),
             providesTags: ["stock"],
         }),
+        ownerStockAnalytics: build.query({
+            query: () => ({
+                url: `/stocks/stock/analysis${location.search}`,
+                method: "GET",
+            }),
+            providesTags: ["stock"],
+        }),
         getMyStocks: build.query({
             query: () => ({
                 url: `/stocks/my-stocks${location.search}`,
@@ -30,14 +37,17 @@ const stocksApi = baseApi.injectEndpoints({
                 url: "/stocks/create",
                 method: "POST",
                 body: data,
+                headers: {
+                    Authorization: `Bearer ${Cookies.get("accessToken")}`,
+                }
             }),
             invalidatesTags: ["stock"],
         }),
         updateStock: build.mutation({
-            query: (data) => ({
-                url: `/stocks/${data?.id}`,
+            query: ({ id, payload }) => ({
+                url: `/stocks/update/${id}`,
                 method: "PATCH",
-                body: data,
+                body: payload,
                 headers: {
                     Authorization: `Bearer ${Cookies.get("accessToken")}`,
                 },
@@ -53,16 +63,17 @@ const stocksApi = baseApi.injectEndpoints({
                 },
             }),
             invalidatesTags: ["stock"],
-        }),       
+        }),
     }),
 });
 
 export const {
     useGetStocksQuery,
+    useOwnerStockAnalyticsQuery,
     useGetMyStocksQuery,
-    useGetStockByIdQuery,    
+    useGetStockByIdQuery,
 
     useCreateStockMutation,
     useUpdateStockMutation,
-    useDeleteStockMutation,    
+    useDeleteStockMutation,
 } = stocksApi;

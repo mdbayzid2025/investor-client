@@ -18,7 +18,7 @@ const AllRequestList = () => {
 
     const [createChat] = useCreateChatMutation();
 
-    const handleViewDetails = async (req: any) => {
+    const handleViewConversation = async (req: any) => {
         try {
             const response = await createChat({ ownerId: req?.createdBy?._id, id: req?._id })?.unwrap()
             if (response?.success) {
@@ -43,7 +43,7 @@ const AllRequestList = () => {
                 </div>
             ) : (
                 requestsData?.data?.map((req: any, i: any) =>
-                    <RequestCard key={i} req={req} setOpenConversation={setOpenConversation} setSelectRequest={setSelectRequest} />)
+                    <RequestCard key={i} req={req} handleViewConversation={handleViewConversation} setSelectRequest={setSelectRequest} />)
             )}
             <RequestConversationModal request={selectRequest} open={openConversation} onClose={() => setOpenConversation(false)} />
         </div>

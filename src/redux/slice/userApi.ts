@@ -3,6 +3,18 @@ import Cookies from "js-cookie";
 
 const userApi = baseApi.injectEndpoints({
     endpoints: (build) => ({
+        getProfile: build.query({
+            query: () => ({ url: `/users/profile`, method: "GET" }),
+            providesTags: ["profile"],
+            transformResponse: (response: { data: any }) => response.data,
+        }),
+        getUserAnalytics: build.query({
+            query: () => ({ url: `/dashboard/user-analysis`, method: "GET" }),
+            providesTags: ["profile"],
+            transformResponse: (response: { data: any }) => response.data,
+        }),
+
+
         getUsers: build.query({
             query: () => ({
                 url: `/users${location.search}`,
@@ -14,11 +26,6 @@ const userApi = baseApi.injectEndpoints({
         getAdmin: build.query({
             query: () => ({ url: `/admins/get-admin${location.search}`, method: "GET" }),
             providesTags: ['admin'],
-            transformResponse: (response: { data: any }) => response.data,
-        }),
-        getProfile: build.query({
-            query: () => ({ url: `/users/profile`, method: "GET" }),
-            providesTags: ["profile"],
             transformResponse: (response: { data: any }) => response.data,
         }),
         createAdmin: build.mutation({
@@ -77,6 +84,7 @@ const userApi = baseApi.injectEndpoints({
 });
 
 export const {
+    useGetUserAnalyticsQuery,
     useGetUsersQuery,
     useGetAdminQuery,
     useGetProfileQuery,

@@ -2,7 +2,7 @@ import MuiImageViewer from "@/components/shared/MuiImageViewer";
 import { useGetMessagesQuery, useSendMessageMutation } from "@/redux/slice/chatApi";
 import { getImageUrl } from "@/utils/baseUrl";
 import Grid from "@mui/material/Grid";
-import { ArrowLeft, Image, OctagonX, Send, X } from "lucide-react";
+import { ArrowLeft, Image, Loader, MessageCircleMore, OctagonX, Send, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
@@ -11,7 +11,7 @@ function ConversationPanel({ conversationId, setSelectedConversationId }: { conv
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const [imageFiles, setImageFiles] = useState<File[]>([])
     const [loading, setLoading] = useState(false);
-
+    const [message, setMesage] = useState("")
 
     const { data, isLoading } = useGetMessagesQuery(conversationId);
     const [sendMessage] = useSendMessageMutation()
@@ -19,24 +19,17 @@ function ConversationPanel({ conversationId, setSelectedConversationId }: { conv
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [data]);
 
-    if (isLoading) {
-        return <p className="p-4 text-gray-400">Loading messages...</p>;
-    }
-
     const removeImage = (index: number) => {
         setImageFiles((prev) => prev.filter((_, i) => i !== index))
     }
 
-    console.log("data", data);
-
     // Message Send
     const handleSendMessage = async (e: any) => {
         e.preventDefault();
-        let content = e.target.content.value;
 
 
         const payload = new FormData();
-        payload.append("data", JSON.stringify({ content: e.target.content.value }));
+        payload.append("data", JSON.stringify({ content: message }));
 
         if (imageFiles?.length) {
             imageFiles?.map(img => {
@@ -49,7 +42,7 @@ function ConversationPanel({ conversationId, setSelectedConversationId }: { conv
             if (response?.success) {
                 toast.success(response?.message);
                 setImageFiles([]);
-                content = ""
+                setMesage("");
             }
         } catch (error: any) {
             toast.error(error?.data?.message)
@@ -59,18 +52,37 @@ function ConversationPanel({ conversationId, setSelectedConversationId }: { conv
     return (
         <div className="flex flex-col h-full">
             {/* Header */}
-            {data?.conversation?.myAlias === "Post Owner" && <div onClick={() => setSelectedConversationId("")} className="flex items-center gap-3 px-6 py-4 border-b border-white/10 cursor-pointer">
-                <button className="text-gray-400 hover:text-white">
-                    <ArrowLeft className="w-4 h-4" />
-                </button>
-                <p className="text-white font-semibold">Back </p>
-            </div>}
+            {isLoading ? <p className="p-4 text-gray-400 animate-bounce"><Loader /></p>
+                : data?.conversation?.myAlias === "Post Owner" &&
+                <div onClick={() => setSelectedConversationId("")} className="flex items-center gap-3 px-6 py-4 border-b border-white/10 cursor-pointer">
+                    <button className="text-gray-400 hover:text-white">
+                        <ArrowLeft className="w-4 h-4" />
+                    </button>
+                    <p className="text-white font-semibold">Back </p>
+                </div>}
 
             {/* Messages */}
             <div className="flex-1 overflow-y-auto px-6 py-4 space-y-3">
-                {data?.messages.map((msg: any) => (
+                {data?.messages?.length ? data?.messages.map((msg: any) => (
                     <ChatBubble key={msg._id} msg={msg} />
-                ))}
+                )) :
+                    <>
+                        {/* Empty Messages */}
+                        <div className="flex-1 flex h-[calc(100%-100px)] items-center justify-center px-4 py-2">
+                            <div className="flex flex-col items-center gap-4 px-8 text-center">
+                                <MessageCircleMore  className="w-32 h-32 text-primary" strokeWidth={1.5} />
+                                <div>
+                                    <h3 className="text-xl font-semibold text-gray-200 mb-2">
+                                        No messages yet
+                                    </h3>
+                                    <p className="text-gray-500 max-w-sm">
+                                        Start a conversation by sending your first message below
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </>
+                }
                 <div ref={messagesEndRef} />
             </div>
 
@@ -131,6 +143,8 @@ function ConversationPanel({ conversationId, setSelectedConversationId }: { conv
 
                             <input
                                 name="content"
+                                value={message}
+                                onChange={(e)=>setMesage(e.target.value)}
                                 placeholder="Message sending coming next..."
                                 className="flex-1 bg-[#1A1A1A] border border-white/10 rounded-full px-4 py-2 text-sm text-gray-300"
                             />

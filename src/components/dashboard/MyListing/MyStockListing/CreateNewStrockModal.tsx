@@ -5,34 +5,40 @@ import { useRouter } from "next/navigation";
 
 import { ArrowLeft, Plus, X, ImageIcon } from "lucide-react";
 import { Button } from "@mui/material";
+import { toast } from "sonner";
+import { useCreateStockMutation } from "@/redux/slice/stocksApi";
 
-const CATEGORIES = [
-  "Residential",
-  "Commercial",
-  "Agricultural",
-  "Industrial",
-  "Mixed-Use",
-  "Land",
-];
+// const CATEGORIES = [
+//   "Residential",
+//   "Commercial",
+//   "Agricultural",
+//   "Industrial",
+//   "Mixed-Use",
+//   "Land",
+// ];
 
+
+const initState = {
+  category: "Residential",
+  title: "",
+  description: "",
+  price: "",        // renamed from priceRange
+  size: "",         // new field
+  location: "",
+  features: [""],
+  galleryImages: [] as File[],
+}
 export default function CreateNewStrockModal({ open, onClose }: { open: boolean, onClose: () => void }) {
 
   if (!open) return null;
   const router = useRouter();
 
   // Add "size" to formData state
-  const [formData, setFormData] = useState({
-    category: "Residential",
-    title: "",
-    description: "",
-    price: "",        // renamed from priceRange
-    size: "",         // new field
-    location: "",
-    features: [""],
-    galleryImages: [] as File[],
-  });
+  const [formData, setFormData] = useState(initState);
 
   const [galleryPreviews, setGalleryPreviews] = useState<string[]>([]);
+
+  const [createStock] = useCreateStockMutation()
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -85,7 +91,7 @@ export default function CreateNewStrockModal({ open, onClose }: { open: boolean,
   };
 
   // Corrected handleSubmit
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const payload = new FormData();
@@ -107,10 +113,17 @@ export default function CreateNewStrockModal({ open, onClose }: { open: boolean,
       payload.append("images", file);
     });
 
-    console.log("Submitting payload...");
-    // Example: await fetch("/api/listings", { method: "POST", body: payload });
+    try {
+      const response = await createStock(payload)?.unwrap();
+      console.log("response", response);
 
-    onClose();
+      if (response?.success) {
+        toast.success(response?.message)
+        onClose()
+      }
+    } catch (error: any) {
+      toast.error(error?.data?.message)
+    }
   };
 
   return (
@@ -135,7 +148,7 @@ export default function CreateNewStrockModal({ open, onClose }: { open: boolean,
 
             <div className="space-y-6">
               {/* Category */}
-              <div>
+              {/* <div>
                 <label className="block text-sm text-gray-400 mb-2">Property Category *</label>
                 <select
                   name="category"
@@ -148,7 +161,7 @@ export default function CreateNewStrockModal({ open, onClose }: { open: boolean,
                     <option key={cat} value={cat}>{cat}</option>
                   ))}
                 </select>
-              </div>
+              </div> */}
 
               {/* Title */}
               <div>
@@ -185,21 +198,18 @@ export default function CreateNewStrockModal({ open, onClose }: { open: boolean,
           <div className="bg-[#111111] border border-primary/20 rounded-xl p-8">
             <h2 className="text-xl font-serif text-white mb-6">Financial Details</h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Price Range */}
-              <div>
-                <label className="block text-sm text-gray-400 mb-2">Price Range *</label>
-                // In Financial Details section - change name and value
-                <input
-                  type="text"
-                  name="price"              // was "priceRange"
-                  value={formData.price}    // was formData.priceRange
-                  onChange={handleChange}
-                  required
-                  placeholder="e.g., R 5M - R 7M or $5M - $7M"
-                  className="w-full bg-[#0A0A0A] border border-primary/40 rounded-lg px-4 py-3 text-white focus:border-primary outline-none"
-                />
-              </div>
+            {/* Price Range */}
+            <div>
+              <label className="block text-sm text-gray-400 mb-2">Price Range *</label>
+              <input
+                type="text"
+                name="price"              // was "priceRange"
+                value={formData.price}    // was formData.priceRange
+                onChange={handleChange}
+                required
+                placeholder="e.g., R 5M - R 7M or $5M - $7M"
+                className="w-full mb-4 bg-[#0A0A0A] border border-primary/40 rounded-lg px-4 py-3 text-white focus:border-primary outline-none"
+              />
             </div>
             {/* Size */}
             <div>

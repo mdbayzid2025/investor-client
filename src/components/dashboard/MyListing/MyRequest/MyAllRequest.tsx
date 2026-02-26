@@ -17,9 +17,9 @@ const MyAllRequest = () => {
     const [openUpdateModal, setOpenUpdateModal] = useState(false);
     const [selectedRequest, setSelectedRequest] = useState(null)
     const [deleteModal, setDeleteModal] = useState(false);
-    const [itemToDelete, setItemToDelete] = useState<any>(null);
+    
     const [detailModal, setDetailModal] = useState(false);
-    const [selectedListing, setSelectedListing] = useState(null);
+
 
     const [openConversation, setOpenConversation] = useState(false);
     const [selectRequest, setSelectRequest] = useState(null);
@@ -27,20 +27,22 @@ const MyAllRequest = () => {
     const { data: myRequestData, isLoading } = useGetMyRequestsQuery({});
     const [deleteRequest] = useDeleteRequestMutation()
 
-    console.log("myRequestData", myRequestData);
+
 
     // handleDelete
     const handleDelete = async () => {
         try {
-            await deleteRequest(itemToDelete._id).unwrap();
-            toast.success("Request deleted");
+            const response = await deleteRequest((selectRequest as any)?._id).unwrap();
+            if (response?.message) {
+                toast.success(response?.message);
+                setDeleteModal(false);    
+                setSelectRequest(null)            
+            }
         } catch (error: any) {
             toast.error(error?.data?.message ?? "Failed to delete");
-        } finally {
-            setDeleteModal(false);
-            setItemToDelete(null);
         }
     };
+    
     return (
         <div className="space-y-4">
             {myRequestData?.data?.length === 0 ? (
@@ -53,22 +55,22 @@ const MyAllRequest = () => {
                     </p>
                 </div>
             ) : (
-                myRequestData?.data?.map((req: any, i: any) => <MyRequestCard req={req} setOpenConversation={setOpenConversation} setSelectRequest={setSelectRequest}/>)
+                myRequestData?.data?.map((req: any, i: any) => <MyRequestCard req={req} setOpenConversation={setOpenConversation} setSelectRequest={setSelectRequest} setOpenUpdateModal={setOpenUpdateModal} setDeleteModal={setDeleteModal} setDetailModal={setDetailModal} />)
             )}
-            <UpdateRequestModal open={openUpdateModal} onClose={() => { setOpenUpdateModal(false); setSelectedRequest(null) }} request={selectedRequest} />
+            <UpdateRequestModal open={openUpdateModal} onClose={() => { setOpenUpdateModal(false); setSelectedRequest(null) }} request={selectRequest} />
 
             <DeleteConfirmModal
                 open={deleteModal}
                 onClose={() => setDeleteModal(false)}
                 onConfirm={handleDelete}
-                itemName={itemToDelete?.title}
+                itemName={(selectRequest as any)?.title}
             />
             <MyRequestDetailModal
                 open={detailModal}
                 onClose={() => setDetailModal(false)}
-                listing={selectedListing}
+                listing={selectRequest}
             />
-            <RequestConversationModal request={selectRequest} open={openConversation} onClose={() => setOpenConversation(false)}/>
+            <RequestConversationModal request={selectRequest} open={openConversation} onClose={() => setOpenConversation(false)} />
         </div>
     )
 }

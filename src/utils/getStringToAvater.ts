@@ -1,5 +1,3 @@
-// stringToColor
-
 import { height, width } from "@mui/system";
 
 function stringToColor(string: string) {
@@ -7,8 +5,8 @@ function stringToColor(string: string) {
   let i;
 
   /* eslint-disable no-bitwise */
-  for (i = 0; i < string.length; i += 1) {
-    hash = string.charCodeAt(i) + ((hash << 5) - hash);
+  for (i = 0; i < string?.length; i += 1) {
+    hash = string?.charCodeAt(i) + ((hash << 5) - hash);
   }
 
   let color = '#';
@@ -22,16 +20,20 @@ function stringToColor(string: string) {
   return color;
 }
 
-// stringAvatar
+export default function getStringToAvater(name: string, sx?: any) {
+  const parts = name?.split(' ') ?? [];
+  const firstInitial = parts[0]?.[0] ?? '';
+  const secondInitial = parts[1]?.[0] ?? '';
 
-export default function getStringToAvater(name: string, sx?:any) {
   return {
     sx: {
       bgcolor: stringToColor(name),
-      border: 3, borderColor: "rgba(0,0,0,0.4)",
-      height:60, width: 60,
-      ...(sx ? sx : {})
+      border: 3,
+      borderColor: "rgba(0,0,0,0.4)",
+      height: 60,
+      width: 60,
+      ...(sx ?? {}),
     },
-    children: `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`,
+    children: `${firstInitial}${secondInitial}`,
   };
 }

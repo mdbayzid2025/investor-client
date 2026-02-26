@@ -1,9 +1,8 @@
 "use client";
-import { useState } from "react";
+import { getImageUrl } from "@/utils/baseUrl";
 import { Eye, Pencil, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { getImageUrl } from "@/utils/baseUrl";
 
 interface StockItem {
   _id: string;
@@ -55,21 +54,20 @@ function getCategoryLabel(title: string, category?: string) {
   return "PROPERTY";
 }
 
-export default function MyStockCard({
+export default function UserStockCard({
   item,
-  canExpressInterest,
   setSelectStock,
   setOpenUpdateForm,
-  setDeleteModal,
+  onDelete,
   viewCount = 0,
   interestCount = 0,
   index = 1,
 }: {
   item: StockItem;
-  canExpressInterest: boolean;
-  setSelectStock: any;
-  setOpenUpdateForm: any;
-  setDeleteModal?:any,
+  canExpressInterest?: boolean;
+  setSelectStock?: any;
+  setOpenUpdateForm?: any;
+  onDelete?: (id: string) => void;
   viewCount?: number;
   interestCount?: number;
   index?: number;
@@ -158,33 +156,12 @@ export default function MyStockCard({
         {/* Action icons */}
         <div className="flex gap-1 justify-center items-start flex-shrink-0 ml-2">
           <Link
-            href={`/user-dashboard/my-listing/stock/${item._id}`}
+            href={`/user-dashboard/stock/${item._id}`}
             className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/8 transition-colors"
             title="View"
           >
             <Eye className="w-4 h-4" />
-          </Link>
-          <button
-            onClick={() => {
-              setSelectStock(item);
-              setOpenUpdateForm(true);
-            }}
-            className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/8 transition-colors"
-            title="Edit"
-          >
-            <Pencil className="w-4 h-4" />
-          </button>
-
-          <button
-           onClick={() => {
-              setSelectStock(item);
-              setDeleteModal(true);
-            }}
-            className="p-2 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-colors"
-            title="Delete"
-          >
-            <Trash2 className="w-4 h-4" />
-          </button>
+          </Link>          
         </div>
       </div>
     </div>

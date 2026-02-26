@@ -40,7 +40,7 @@ export default function UpdateRequestModal({
 }: {
   open: boolean;
   onClose: () => void;
-  request: RequestData | null;
+  request: any;
 }) {
   const [formdata, setFormdata] = useState<FormState>({
     title: "",
@@ -52,8 +52,10 @@ export default function UpdateRequestModal({
   });
   const [errors, setErrors] = useState<Partial<FormState>>({});
   const [updateRequest, { isLoading }] = useUpdateRequestMutation();
+  
+console.log("request update", request);
 
-  // Pre-fill form when request prop changes
+
   useEffect(() => {
     if (request) {
       setFormdata({
