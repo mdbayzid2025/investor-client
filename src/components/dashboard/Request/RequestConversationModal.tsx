@@ -88,7 +88,7 @@ function ChatListPanel({
 function UserConversationWrapper({ requestId }: { requestId: string }) {
   const { data, isLoading } = useGetMyConversationQuery(requestId);
 
-  
+
   if (isLoading) {
     return <p className="p-4 text-gray-400">Loading conversation...</p>;
   }
@@ -99,7 +99,7 @@ function UserConversationWrapper({ requestId }: { requestId: string }) {
     return <p className="p-4 text-gray-400">No conversation found.</p>;
   }
 
-  return <ConversationPanel conversationId={conversationId} />;  
+  return <ConversationPanel conversationId={conversationId} />;
 }
 
 // ───────────────── Main Modal ─────────────────
@@ -126,7 +126,7 @@ export default function RequestConversationModal({
   const owner = profileData?._id?.toString() === requestData?.createdBy?._id?.toString();
 
   console.log("request data", owner);
-  
+
   return (
     <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
       <div className="w-full max-w-3xl h-[90vh] bg-[#0D0D0D] border border-[#E6C97A]/30 rounded-2xl overflow-hidden flex flex-col">
@@ -158,17 +158,16 @@ export default function RequestConversationModal({
           ) : !owner ? (
             <UserConversationWrapper requestId={request?._id} />
           ) : (
-            // Owner: show list → then drill into a conversation
             selectedConversationId ? (
               <ConversationPanel
-                conversationId={selectedConversationId}      
-                setSelectedConversationId={setSelectedConversationId}          
+                conversationId={selectedConversationId}
+                setSelectedConversationId={setSelectedConversationId}
               />
             ) : (
               <ChatListPanel
                 onSelect={setSelectedConversationId}
                 requestId={request?._id}
-              />              
+              />
             )
           )}
         </div>
