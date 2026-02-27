@@ -18,6 +18,7 @@ import {
 import Cookies from "js-cookie";
 import Image from "next/image";
 import { getImageUrl } from "@/utils/baseUrl";
+import { useGetProfileQuery } from "@/redux/slice/userApi";
 
 
 
@@ -29,8 +30,8 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { name: "Dashboard", href: "/user-dashboard", icon: LayoutDashboard },
-  { name: "Requests", href: "/user-dashboard/requests", icon: FileText },
   { name: "My Listing", href: "/user-dashboard/my-listing", icon: FileText },
+  { name: "Requests", href: "/user-dashboard/requests", icon: FileText },
   { name: "Stock", href: "/user-dashboard/stock", icon: Package },
   {
     name: "Subscription",
@@ -46,12 +47,12 @@ const navItems: NavItem[] = [
   // },
 ];
 
-export function Sidebar({ profile }: any) {
+export function Sidebar() {
 
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-
+  const { data: profile } = useGetProfileQuery({});
   const handleLogout = () => {
     Cookies.remove("accessToken");
     window.location.href = "/login";

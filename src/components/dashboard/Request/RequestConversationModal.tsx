@@ -135,7 +135,7 @@ export default function RequestConversationModal({
         <div className="flex justify-between px-6 py-4 border-b border-white/10">
           <div>
             <h2 className="text-lg font-semibold text-white">
-              Request Details
+              Request Conversation
             </h2>
             <p className="text-xs text-gray-400">
               {owner ? "Owner conversation panel" : "Your conversation"}

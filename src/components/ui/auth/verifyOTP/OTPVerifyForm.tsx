@@ -24,23 +24,14 @@ export default function OTPVerifyForm() {
   const [verifyOtp] = useVerifyOTPMutation()
 
   const email = Cookies.get("verify-email");
+  const resetEmail = Cookies.get("reset-email");
   const router = useRouter();
 
   const secondsLeft = useOtpTimer(resetKey);
 
-  console.log("secondsLeft", secondsLeft);
-  
   useEffect(() => {
     if (secondsLeft === null) return;
-
-    // if (secondsLeft <= 0) {
-    //   setIsExpired(true);
-    // } else {
-    //   setTimeLeft(secondsLeft);
-    // }
-
-    setTimeLeft(secondsLeft);
-
+        setTimeLeft(secondsLeft);
   }, [secondsLeft]);
 
   const formatTime = (seconds: number): string => {
@@ -98,7 +89,7 @@ export default function OTPVerifyForm() {
       if (response?.success) {
         toast?.success(response?.message);
         Cookies.set("resetToken", response?.data?.verifyToken)
-        router.replace("/new-password");
+        router.replace(resetEmail ? "/new-password" : "/login");
         setIsLoading(false);
       }
 
@@ -126,9 +117,7 @@ export default function OTPVerifyForm() {
         setIsLoading(false);
         setTimeout(() => inputRefs.current[0]?.focus(), 100);
       }
-    } catch (error: any) {
-      console.log("error", error);
-
+    } catch (error: any) {      
       toast.error(error?.data?.message)
     }
   };

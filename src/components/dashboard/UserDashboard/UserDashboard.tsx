@@ -56,7 +56,7 @@ const UserDashboard = () => {
             </div>
 
             {/* Status Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 xl:gap-6 mb-12">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 xl:gap-6 mb-12">
                 {stats.map((stat, i) => (
                     <div
                         key={i}

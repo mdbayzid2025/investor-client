@@ -22,8 +22,8 @@ import { getImageUrl } from "@/utils/baseUrl";
 // ────────────────────────────────────────────────
 
 export default function UserStockDetailsPage() {
-  const { stockId } = useParams<{ stockId: string }>();  
-  
+  const { stockId } = useParams<{ stockId: string }>();
+
   const [interested, setInterested] = useState(false);
 
   // Fetch stock data using RTK Query
@@ -74,14 +74,14 @@ export default function UserStockDetailsPage() {
 
 
   console.log("stockItem", stockItem);
-  
+
   // ─── Render when data exists ─────────────────────────────
   return (
     <div className="min-h-screen bg-black text-white px-4 sm:px-6 lg:px-10 py-8">
       <div className="max-w-7xl mx-auto pb-20">
         {/* Back button */}
         <Link
-          href="/user-dashboard/my-listing"
+          href="/user-dashboard/stock"
           className="flex items-center gap-2 text-gray-400 hover:text-primary transition-colors mb-6 group w-fit"
         >
           <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
@@ -124,7 +124,7 @@ export default function UserStockDetailsPage() {
                       src={getImageUrl() + img}
                       alt={`Gallery ${idx + 1}`}
                       fill
-                      className="object-cover blur-[2px] group-hover:blur-sm transition-all"                      
+                      className="object-cover blur-[2px] group-hover:blur-sm transition-all"
                     />
                     <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors" />
                   </div>
@@ -144,26 +144,14 @@ export default function UserStockDetailsPage() {
               <span>{stockItem.location || "Location Confidential"}</span>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-6 sm:mb-8">
-              <div className="bg-[#1A1A1A] border border-primary/10 p-3 sm:p-4 rounded-lg">
-                <div className="flex items-center gap-2 text-gray-400 text-xs uppercase tracking-wider mb-1">
-                  <DollarSign className="w-3 h-3 text-primary" />
-                  Price Guide
-                </div>
-                <p className="text-lg sm:text-xl text-white font-serif">
-                  {stockItem.price}
-                </p>
+            <div className="bg-[#1A1A1A] border border-primary/10 p-3 sm:p-4 rounded-lg">
+              <div className="flex items-center gap-2 text-gray-400 text-xs uppercase tracking-wider mb-1">
+                <DollarSign className="w-3 h-3 text-primary" />
+                Price Guide
               </div>
-
-              <div className="bg-[#1A1A1A] border border-primary/10 p-3 sm:p-4 rounded-lg">
-                <div className="flex items-center gap-2 text-gray-400 text-xs uppercase tracking-wider mb-1">
-                  <TrendingUp className="w-3 h-3 text-primary" />
-                  Size
-                </div>
-                <p className="text-lg sm:text-xl text-white font-serif">
-                  {stockItem.size}
-                </p>
-              </div>
+              <p className="text-lg sm:text-xl text-white font-serif">
+                {stockItem.price}
+              </p>
             </div>
 
             <div className="mb-6 sm:mb-8">

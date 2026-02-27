@@ -118,8 +118,7 @@ export function SignupForm() {
 
       // TODO: Replace with your actual API call
       const response = await signup(payload)?.unwrap();
-      console.log("response", response);
-      
+
       if (response.success) {
         toast.success("We’ve sent an OTP to your email. Please verify your account using the OTP.")
         setIsLoading(false)
@@ -149,266 +148,269 @@ export function SignupForm() {
           <p className="text-gray-400">Create your account and start investing</p>
         </div>
 
-        <div className="bg-[#111111] p-8 rounded-xl border border-primary/20">
+        <div className="bg-[#111111] md:min-w-xl p-8 rounded-xl border border-primary/20">
           <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="grid md:grid-cols-2 gap-4">
 
-            {/* Name */}
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Name</label>
-              <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="w-full bg-[#1A1A1A] border border-primary/20 rounded-lg px-12 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-colors"
-                  placeholder="John"
-                  required
-                />
+
+              {/* Name */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Name</label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    className="w-full bg-[#1A1A1A] border border-primary/20 rounded-lg px-12 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-colors"
+                    placeholder="John"
+                    required
+                  />
+                </div>
               </div>
-            </div>
 
-            {/* Email */}
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Email Address</label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="w-full bg-[#1A1A1A] border border-primary/20 rounded-lg px-12 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-colors"
-                  placeholder="you@example.com"
-                  required
-                />
+              {/* Email */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Email Address</label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="w-full bg-[#1A1A1A] border border-primary/20 rounded-lg px-12 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-colors"
+                    placeholder="you@example.com"
+                    required
+                  />
+                </div>
               </div>
-            </div>
 
-            {/* Phone */}
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Contact Number</label>
-              <div className="relative">
-                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  className="w-full bg-[#1A1A1A] border border-primary/20 rounded-lg px-12 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-colors"
-                  placeholder="+27 82 123 4567"
-                  required
-                />
+              {/* Phone */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Contact Number</label>
+                <div className="relative">
+                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    className="w-full bg-[#1A1A1A] border border-primary/20 rounded-lg px-12 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-colors"
+                    placeholder="+27 82 123 4567"
+                    required
+                  />
+                </div>
               </div>
-            </div>
 
-            {/* Password */}
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Password</label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
-                <input
-                  type="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="w-full bg-[#1A1A1A] border border-primary/20 rounded-lg px-12 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-colors"
-                  placeholder="Minimum 8 characters"
-                  required
-                />
+              {/* Password */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Password</label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                  <input
+                    type="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    className="w-full bg-[#1A1A1A] border border-primary/20 rounded-lg px-12 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-colors"
+                    placeholder="Minimum 8 characters"
+                    required
+                  />
+                </div>
               </div>
-            </div>
 
-            {/* Confirm Password */}
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Confirm Password</label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
-                <input
-                  type="password"
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  className="w-full bg-[#1A1A1A] border border-primary/20 rounded-lg px-12 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-colors"
-                  placeholder="Re-enter password"
-                  required
-                />
+              {/* Confirm Password */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Confirm Password</label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                  <input
+                    type="password"
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    className="w-full bg-[#1A1A1A] border border-primary/20 rounded-lg px-12 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-colors"
+                    placeholder="Re-enter password"
+                    required
+                  />
+                </div>
               </div>
-            </div>
 
-            {/* Role */}
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">I am a</label>
-              <div className="relative">
-                <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
-                <select
-                  name="role"
-                  value={formData.role}
-                  onChange={handleChange}
-                  className="w-full bg-[#1A1A1A] border border-primary/20 rounded-lg pl-12 pr-4 py-3 text-white focus:outline-none focus:border-primary transition-colors"
-                  required
-                >
-                  <option value="">Select your role</option>
-                  <option value="INVESTOR">Investor</option>
-                  <option value="AGENT">Agent</option>
-                  <option value="DEVELOPER">Developer</option>
-                  <option value="SELLER">Seller</option>
-                </select>
+              {/* Role */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">I am a</label>
+                <div className="relative">
+                  <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                  <select
+                    name="role"
+                    value={formData.role}
+                    onChange={handleChange}
+                    className="w-full bg-[#1A1A1A] border border-primary/20 rounded-lg pl-12 pr-4 py-3 text-white focus:outline-none focus:border-primary transition-colors"
+                    required
+                  >
+                    <option value="">Select your role</option>
+                    <option value="INVESTOR">Investor</option>
+                    <option value="AGENT">Agent</option>
+                    <option value="DEVELOPER">Developer</option>
+                    <option value="SELLER">Seller</option>
+                  </select>
+                </div>
+                <p className="mt-1.5 text-xs text-gray-500">Helps us personalize your experience</p>
               </div>
-              <p className="mt-1.5 text-xs text-gray-500">Helps us personalize your experience</p>
-            </div>
 
-            {/* Conditional Fields */}
-            {formData.role && (
-              <div className="pt-4 border-t border-primary/10 space-y-5 animate-fadeIn">
+              {/* Conditional Fields */}
+              {formData.role && (
+                <div className="md:grid md:grid-cols-2 md:col-span-2  gap-4 pt-4 border-t border-primary/10 space-y-5 animate-fadeIn">
 
-                {/* Agent Fields */}
-                {formData.role === 'AGENT' && (
-                  <>
+                  {/* Agent Fields */}
+                  {formData.role === 'AGENT' && (
+                    <>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">Agency Details</label>
+                        <div className="relative">
+                          <Building className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                          <input
+                            type="text"
+                            name="agencyDetails"
+                            value={formData.agencyDetails}
+                            onChange={handleChange}
+                            className="w-full bg-[#1A1A1A] border border-primary/20 rounded-lg px-12 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-colors"
+                            placeholder="e.g. ABC Realty, Sandton Branch"
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">FFC Number</label>
+                        <input
+                          type="text"
+                          name="ffcNumber"
+                          value={formData.ffcNumber}
+                          onChange={handleChange}
+                          className="w-full bg-[#1A1A1A] border border-primary/20 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-colors"
+                          placeholder="FFC-123456"
+                          required
+                        />
+                      </div>
+                    </>
+                  )}
+
+                  {/* Investor Fields */}
+                  {formData.role === 'INVESTOR' && (
+                    <>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">Investor Type</label>
+                        <select
+                          name="investorType"
+                          value={formData.investorType}
+                          onChange={handleChange}
+                          className="w-full bg-[#1A1A1A] border border-primary/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors"
+                          required
+                        >
+                          <option value="">Select type</option>
+                          <option value="private">Private Investor</option>
+                          <option value="institutional">Institutional Investor</option>
+                        </select>
+                        <p className="mt-1.5 text-xs text-gray-500">This information helps us match opportunities</p>
+                      </div>
+
+                      <div>
+                        {/* ✅ Fixed label and field name: investmentBudget (was investmentAmount) */}
+                        <label className="block text-sm font-medium text-gray-300 mb-2">Investment Budget</label>
+                        <div className="relative">
+                          <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                          <input
+                            type="number"
+                            name="investmentBudget"
+                            value={formData.investmentBudget}
+                            onChange={handleChange}
+                            className="w-full bg-[#1A1A1A] border border-primary/20 rounded-lg px-12 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-colors"
+                            placeholder="e.g. 500000"
+                            min="0"
+                            step="10000"
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div className='col-span-2'>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">Location</label>
+                        <div className="relative">
+                          <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                          <select
+                            name="location"
+                            value={formData.location}
+                            onChange={handleChange}
+                            className="w-full bg-[#1A1A1A] border border-primary/20 rounded-lg pl-12 pr-4 py-3 text-white focus:outline-none focus:border-primary transition-colors"
+                            required
+                          >
+                            <option value="">Select location</option>
+                            <option value="south-africa">South Africa</option>
+                            <option value="international">International</option>
+                          </select>
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  {/* Developer Fields */}
+                  {formData.role === 'DEVELOPER' && (
                     <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">Agency Details</label>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">Company Name</label>
                       <div className="relative">
                         <Building className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
                         <input
                           type="text"
-                          name="agencyDetails"
-                          value={formData.agencyDetails}
+                          name="companyName"
+                          value={formData.companyName}
                           onChange={handleChange}
                           className="w-full bg-[#1A1A1A] border border-primary/20 rounded-lg px-12 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-colors"
-                          placeholder="e.g. ABC Realty, Sandton Branch"
+                          placeholder="e.g. XYZ Developments (Pty) Ltd"
                           required
                         />
                       </div>
                     </div>
+                  )}
+                </div>
+              )}
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">FFC Number</label>
-                      <input
-                        type="text"
-                        name="ffcNumber"
-                        value={formData.ffcNumber}
-                        onChange={handleChange}
-                        className="w-full bg-[#1A1A1A] border border-primary/20 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-colors"
-                        placeholder="FFC-123456"
-                        required
-                      />
-                    </div>
-                  </>
-                )}
-
-                {/* Investor Fields */}
-                {formData.role === 'INVESTOR' && (
-                  <>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">Investor Type</label>
-                      <select
-                        name="investorType"
-                        value={formData.investorType}
-                        onChange={handleChange}
-                        className="w-full bg-[#1A1A1A] border border-primary/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors"
-                        required
-                      >
-                        <option value="">Select type</option>
-                        <option value="private">Private Investor</option>
-                        <option value="institutional">Institutional Investor</option>
-                      </select>
-                      <p className="mt-1.5 text-xs text-gray-500">This information helps us match opportunities</p>
-                    </div>
-
-                    <div>
-                      {/* ✅ Fixed label and field name: investmentBudget (was investmentAmount) */}
-                      <label className="block text-sm font-medium text-gray-300 mb-2">Investment Budget</label>
-                      <div className="relative">
-                        <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
-                        <input
-                          type="number"
-                          name="investmentBudget"
-                          value={formData.investmentBudget}
-                          onChange={handleChange}
-                          className="w-full bg-[#1A1A1A] border border-primary/20 rounded-lg px-12 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-colors"
-                          placeholder="e.g. 500000"
-                          min="0"
-                          step="10000"
-                          required
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">Location</label>
-                      <div className="relative">
-                        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
-                        <select
-                          name="location"
-                          value={formData.location}
-                          onChange={handleChange}
-                          className="w-full bg-[#1A1A1A] border border-primary/20 rounded-lg pl-12 pr-4 py-3 text-white focus:outline-none focus:border-primary transition-colors"
-                          required
-                        >
-                          <option value="">Select location</option>
-                          <option value="south-africa">South Africa</option>
-                          <option value="international">International</option>
-                        </select>
-                      </div>
-                    </div>
-                  </>
-                )}
-
-                {/* Developer Fields */}
-                {formData.role === 'DEVELOPER' && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Company Name</label>
-                    <div className="relative">
-                      <Building className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
-                      <input
-                        type="text"
-                        name="companyName"
-                        value={formData.companyName}
-                        onChange={handleChange}
-                        className="w-full bg-[#1A1A1A] border border-primary/20 rounded-lg px-12 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-colors"
-                        placeholder="e.g. XYZ Developments (Pty) Ltd"
-                        required
-                      />
-                    </div>
-                  </div>
-                )}
+              {/* ✅ Fixed: termsAndConditions handled as boolean via handleChange */}
+              <div className="text-xs text-gray-400 pt-2">
+                <label className="flex items-start">
+                  <input
+                    type="checkbox"
+                    name="termsAndConditions"
+                    checked={formData.termsAndConditions}
+                    onChange={handleChange}
+                    className="mr-2 mt-1 accent-primary"
+                    required
+                  />
+                  <span>
+                    I agree to the{' '}
+                    <Link href="/terms" className="text-primary hover:text-[#E4C77D]">Terms of Service</Link>{' '}
+                    and{' '}
+                    <Link href="/privacy" className="text-primary hover:text-[#E4C77D]">Privacy Policy</Link>
+                  </span>
+                </label>
               </div>
-            )}
-
-            {/* ✅ Fixed: termsAndConditions handled as boolean via handleChange */}
-            <div className="text-xs text-gray-400 pt-2">
-              <label className="flex items-start">
-                <input
-                  type="checkbox"
-                  name="termsAndConditions"
-                  checked={formData.termsAndConditions}
-                  onChange={handleChange}
-                  className="mr-2 mt-1 accent-primary"
-                  required
-                />
-                <span>
-                  I agree to the{' '}
-                  <Link href="/terms" className="text-primary hover:text-[#E4C77D]">Terms of Service</Link>{' '}
-                  and{' '}
-                  <Link href="/privacy" className="text-primary hover:text-[#E4C77D]">Privacy Policy</Link>
-                </span>
-              </label>
-            </div>
-
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? 'Creating Account...' : 'Create Account'}
-            </Button>
-
-            <p className="text-xs text-center text-gray-500">
-              All information is handled confidentially.
-            </p>
-
-            {error && (
-              <div className="mt-2 text-sm text-red-500">
-                {error}
               </div>
-            )}
+
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? 'Creating Account...' : 'Create Account'}
+              </Button>
+
+              <p className="text-xs text-center text-gray-500">
+                All information is handled confidentially.
+              </p>
+
+              {error && (
+                <div className="mt-2 text-sm text-red-500">
+                  {error}
+                </div>
+              )}
           </form>
 
           <div className="mt-6 text-center text-sm text-gray-400">

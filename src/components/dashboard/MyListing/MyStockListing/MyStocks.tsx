@@ -37,7 +37,7 @@ const MyStocks = () => {
             <BookmarkCheck className="w-6 h-6 text-[#E6C97A]/60" />
           </div>
           <p className="text-gray-400 text-sm">
-            No requests found for this category.
+            No stocks found..
           </p>
         </div>
       ) : (

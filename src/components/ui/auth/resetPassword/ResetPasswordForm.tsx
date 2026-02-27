@@ -28,7 +28,7 @@ export function ResetPasswordForm() {
       
       if (response?.success) {
         toast.success(response?.message)
-        Cookies.set("verify-email", email);
+        Cookies.set("reset-email", email);
         const expiryTime = Date.now() + 3 * 60 * 1000;
         Cookies.set("otpExpiry", expiryTime.toString());
         router.push("/otp-verify")
