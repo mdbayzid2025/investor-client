@@ -72,9 +72,6 @@ export default function UserStockDetailsPage() {
     );
   }
 
-
-  console.log("stockItem", stockItem);
-
   // ─── Render when data exists ─────────────────────────────
   return (
     <div className="min-h-screen bg-black text-white px-4 sm:px-6 lg:px-10 py-8">
@@ -92,13 +89,13 @@ export default function UserStockDetailsPage() {
           {/* ─── Left: Images ──────────────────────────────────── */}
           <div className="space-y-4 sm:space-y-6">
             <div className="relative h-64 sm:h-80 lg:h-96 rounded-xl overflow-hidden border border-primary/20 bg-[#111111]">
-              {/* Main image – blurred for privacy */}
+              {/* Main image */}
               <div className="absolute inset-0 bg-black/10 z-10" />
               <Image
                 src={stockItem?.images?.[0] ? getImageUrl() + stockItem?.images?.[0] : "/placeholder.png"}
                 alt={stockItem.title}
                 fill
-                className="object-cover blur-sm"
+                className={`object-cover ${stockItem?.isBlur ? "blur-sm" : ""}`}
                 priority
               />
               <div className="absolute top-4 left-4 z-20">
@@ -106,10 +103,7 @@ export default function UserStockDetailsPage() {
                   Agricultural
                 </span>
               </div>
-              <div className="absolute bottom-4 left-4 right-4 z-20 bg-black/60 backdrop-blur-md px-3 sm:px-4 py-2 rounded flex items-center gap-2 text-white/90 text-xs sm:text-sm border border-white/10">
-                <Lock className="w-3 h-3 text-primary shrink-0" />
-                <span>Visuals obfuscated for privacy</span>
-              </div>
+
             </div>
 
             {/* Small gallery preview (if more images exist) */}
@@ -124,9 +118,15 @@ export default function UserStockDetailsPage() {
                       src={getImageUrl() + img}
                       alt={`Gallery ${idx + 1}`}
                       fill
-                      className="object-cover blur-[2px] group-hover:blur-sm transition-all"
+                      className={`object-cover transition-all ${stockItem?.isBlur
+                          ? "blur-[2px] group-hover:blur-sm"
+                          : "blur-0 group-hover:scale-105"
+                        }`}
                     />
-                    <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors" />
+                    <div className={`absolute inset-0 transition-colors ${stockItem?.isBlur
+                        ? "bg-black/40 group-hover:bg-black/20"
+                        : "bg-black/10 group-hover:bg-black/0"
+                      }`} />
                   </div>
                 ))}
               </div>

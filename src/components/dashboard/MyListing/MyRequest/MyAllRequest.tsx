@@ -11,7 +11,7 @@ import { toast } from 'sonner';
 import DeleteConfirmModal from '../../Shared/DeleteConfirmModal';
 import MyRequestDetailModal from './MyRequestDetailModal';
 import MyRequestCard from './MyRequestCard';
-import RequestConversationModal from '../../Request/RequestConversationModal';
+import RequestConversationModal from '../../Shared/Chatting/RequestConversationModal';
 
 const MyAllRequest = () => {
     const [openUpdateModal, setOpenUpdateModal] = useState(false);

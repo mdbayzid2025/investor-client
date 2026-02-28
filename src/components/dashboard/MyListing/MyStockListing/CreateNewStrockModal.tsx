@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { ArrowLeft, Plus, X, ImageIcon } from "lucide-react";
-import { Button } from "@mui/material";
+import { Button, FormControlLabel, Switch } from "@mui/material";
 import { toast } from "sonner";
 import { useCreateStockMutation } from "@/redux/slice/stocksApi";
 
@@ -30,15 +30,14 @@ const initState = {
 }
 export default function CreateNewStrockModal({ open, onClose }: { open: boolean, onClose: () => void }) {
 
-  if (!open) return null;
-  const router = useRouter();
-
   // Add "size" to formData state
   const [formData, setFormData] = useState(initState);
-
+  const [isBlur, setIsBlur] = useState(false);
   const [galleryPreviews, setGalleryPreviews] = useState<string[]>([]);
-
   const [createStock] = useCreateStockMutation()
+
+  if (!open) return null;
+  const router = useRouter();
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -103,7 +102,8 @@ export default function CreateNewStrockModal({ open, onClose }: { open: boolean,
       location: formData.location,
       size: formData.size,
       description: formData.description,
-      features: formData.features.filter((f) => f.trim() !== ""), // remove empty entries
+      isBlur,
+      features: formData.features.filter((f) => f.trim() !== ""),
     };
 
     payload.append("data", JSON.stringify(data));
@@ -293,9 +293,12 @@ export default function CreateNewStrockModal({ open, onClose }: { open: boolean,
 
           {/* Gallery Images Upload */}
           <div className="bg-[#111111] border border-primary/20 rounded-xl p-8">
-            <h2 className="text-xl font-serif text-white mb-6">Gallery Images (Optional)</h2>
 
-            <div className="grid grid-cols-3 gap-4 mb-4">
+            <div className="flex justify-between">
+              <h2 className="text-xl font-serif text-white mb-6">Images</h2>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-4 mb-4">
               {galleryPreviews.map((preview, index) => (
                 <div
                   key={index}
@@ -329,8 +332,32 @@ export default function CreateNewStrockModal({ open, onClose }: { open: boolean,
                 />
               </label>
             </div>
-            <p className="text-xs text-gray-500">
-              Recommended: 3-6 high-quality images showcasing different aspects of the property
+            <p className="text-xs text-gray-300 mt-3">
+              <FormControlLabel                
+                control={
+                  <Switch
+                    checked={isBlur}
+                    size="medium"
+                    color="warning"
+                    onChange={(e) => setIsBlur(e.target.checked)}
+                    sx={{
+                      '& .MuiSwitch-track': {
+                        backgroundColor: '#374151', // gray-700
+                      },
+                      '& .Mui-checked + .MuiSwitch-track': {
+                        backgroundColor: '#f59e0b', // warning amber
+                      },
+                    }}
+                  />
+                }
+                label="Blur Image"
+                sx={{
+                  color: '#e5e7eb', // gray-200
+                  '.MuiFormControlLabel-asterisk': {
+                    color: '#f87171', // red-400
+                  },
+                }}
+              />
             </p>
           </div>
 

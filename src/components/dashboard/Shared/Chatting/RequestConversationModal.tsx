@@ -125,7 +125,6 @@ export default function RequestConversationModal({
 
   const owner = profileData?._id?.toString() === requestData?.createdBy?._id?.toString();
 
-  console.log("request data", owner);
 
   return (
     <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">

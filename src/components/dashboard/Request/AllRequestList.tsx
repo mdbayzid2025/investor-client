@@ -6,7 +6,7 @@ import { BookmarkCheck } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
 import { formatChatTime } from '../Shared/FormatChatTime ';
-import RequestConversationModal from './RequestConversationModal';
+import RequestConversationModal from '../Shared/Chatting/RequestConversationModal';
 import { toast } from 'sonner';
 import { useCreateChatMutation } from '@/redux/slice/chatApi';
 import RequestCard from './RequestCard';

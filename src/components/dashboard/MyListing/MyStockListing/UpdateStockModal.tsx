@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { Plus, X, ImageIcon, Loader2 } from "lucide-react";
-import { Button, Grid } from "@mui/material";
+import { Button, FormControlLabel, Grid, Switch } from "@mui/material";
 import { toast } from "sonner";
 import { useUpdateStockMutation } from "@/redux/slice/stocksApi";
 import { getImageUrl } from "@/utils/baseUrl";
@@ -42,17 +42,18 @@ export default function UpdateStockModal({
     removedImageIds: [] as string[],
   });
 
-  const [galleryPreviews, setGalleryPreviews] = useState<
-    { url: string; isExisting: boolean; public_id?: string }[]
-  >([]);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [updateStock] = useUpdateStockMutation();
 
+  const [isBlur, setIsBlur] = useState(false);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [existingImages, setExistingImages] = useState<string[]>([]);
 
 
-  const handleClose = ()=>{
+  console.log("isBlur",isBlur);
+  
+  const handleClose = () => {
     setImageFiles([])
     setExistingImages([]);
     onClose()
@@ -72,7 +73,8 @@ export default function UpdateStockModal({
         newImages: [],
         removedImageIds: [],
       });
-      setExistingImages(stock?.images)
+      setExistingImages(stock?.images);
+      setIsBlur(stock?.isBlur);
     }
   }, [stock]);
 
@@ -115,7 +117,7 @@ export default function UpdateStockModal({
       size: formData.size,
       description: formData.description,
       features: formData.features.filter((f) => f.trim() !== ""),
-      removedImageIds: formData.removedImageIds,
+      isBlur,      
     };
 
     payload.append("data", JSON.stringify(data));
@@ -328,8 +330,37 @@ export default function UpdateStockModal({
                 existingImages={existingImages}
                 onRemoveExisting={(index) => {
                   setExistingImages(existingImages.filter((_, i) => i !== index));
-                }}                
+                }}
               />
+
+              <p className="text-xs text-gray-300  mt-3">
+                <FormControlLabel
+                  
+                  control={
+                    <Switch
+                      checked={isBlur}
+                      size="medium"
+                      color="warning"
+                      onChange={(e) => setIsBlur(e.target.checked)}
+                      sx={{
+                        '& .MuiSwitch-track': {
+                          backgroundColor: '#374151', // gray-700
+                        },
+                        '& .Mui-checked + .MuiSwitch-track': {
+                          backgroundColor: '#f59e0b', // warning amber
+                        },
+                      }}
+                    />
+                  }
+                  label="Blur Image"
+                  sx={{
+                    color: '#e5e7eb', // gray-200
+                    '.MuiFormControlLabel-asterisk': {
+                      color: '#f87171', // red-400
+                    },
+                  }}
+                />
+              </p>
             </Grid>
 
           </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ArrowLeft,
   MapPin,
@@ -10,6 +10,8 @@ import {
   Lock,
   CheckCircle,
   ChevronRight,
+  EyeOff,
+  Eye,
 } from "lucide-react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
@@ -24,6 +26,7 @@ import { getImageUrl } from "@/utils/baseUrl";
 export default function StockDetailsPage() {
   const { id } = useParams<{ id: string }>();
   const [interested, setInterested] = useState(false);
+  const [selectedImage, setSelectedImage] = useState("")
 
   // Fetch stock data using RTK Query
   const {
@@ -34,6 +37,14 @@ export default function StockDetailsPage() {
   } = useGetStockByIdQuery(id, {
     skip: !id, // prevent query if no ID
   });
+
+
+
+  useEffect(() => {
+    if (stockItem?.images?.length) {
+      setSelectedImage(stockItem?.images?.[0])
+    }
+  }, [stockItem])
 
   // ─── Loading state ───────────────────────────────────────
   if (isLoading) {
@@ -72,8 +83,8 @@ export default function StockDetailsPage() {
   }
 
 
-  console.log("stockItem", stockItem);
-  
+
+
   // ─── Render when data exists ─────────────────────────────
   return (
     <div className="min-h-screen bg-black text-white px-4 sm:px-6 lg:px-10 py-8">
@@ -91,13 +102,13 @@ export default function StockDetailsPage() {
           {/* ─── Left: Images ──────────────────────────────────── */}
           <div className="space-y-4 sm:space-y-6">
             <div className="relative h-64 sm:h-80 lg:h-96 rounded-xl overflow-hidden border border-primary/20 bg-[#111111]">
-              {/* Main image – blurred for privacy */}
+              {/* Main image */}
               <div className="absolute inset-0 bg-black/10 z-10" />
               <Image
-                src={stockItem?.images?.[0] ? getImageUrl() + stockItem?.images?.[0] : "/placeholder.png"}
+                src={selectedImage ? getImageUrl() + selectedImage : "/placeholder.png"}
                 alt={stockItem.title}
                 fill
-                className="object-cover blur-sm"
+                className={`object-cover`}
                 priority
               />
               <div className="absolute top-4 left-4 z-20">
@@ -105,27 +116,26 @@ export default function StockDetailsPage() {
                   Agricultural
                 </span>
               </div>
-              <div className="absolute bottom-4 left-4 right-4 z-20 bg-black/60 backdrop-blur-md px-3 sm:px-4 py-2 rounded flex items-center gap-2 text-white/90 text-xs sm:text-sm border border-white/10">
-                <Lock className="w-3 h-3 text-primary shrink-0" />
-                <span>Visuals obfuscated for privacy</span>
-              </div>
+
             </div>
 
             {/* Small gallery preview (if more images exist) */}
             {stockItem?.images?.length > 1 && (
               <div className="grid grid-cols-3 gap-3 sm:gap-4">
-                {stockItem?.images.slice(1).map((img: string, idx: number) => (
+                {stockItem?.images?.map((img: string, idx: number) => (
                   <div
                     key={idx}
-                    className="relative h-20 sm:h-24 rounded-lg overflow-hidden border border-white/10 group cursor-pointer bg-[#111111]"
+                    onClick={() => setSelectedImage(img)}
+                    className={`relative h-20 sm:h-24 rounded-lg overflow-hidden 
+            ${selectedImage === img ? "border-2 border-primary/60" : "border border-white/10"} group cursor-pointer bg-[#111111]`}
                   >
                     <Image
                       src={getImageUrl() + img}
                       alt={`Gallery ${idx + 1}`}
                       fill
-                      className="object-cover blur-[2px] group-hover:blur-sm transition-all"                      
+                      className={`object-cover transition-all blur-0 group-hover:scale-105`}
                     />
-                    <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors" />
+                    <div className={`absolute inset-0 transition-colors bg-black/10 group-hover:bg-black/0`} />
                   </div>
                 ))}
               </div>
@@ -154,6 +164,7 @@ export default function StockDetailsPage() {
                 </p>
               </div>
 
+
               <div className="bg-[#1A1A1A] border border-primary/10 p-3 sm:p-4 rounded-lg">
                 <div className="flex items-center gap-2 text-gray-400 text-xs uppercase tracking-wider mb-1">
                   <TrendingUp className="w-3 h-3 text-primary" />
@@ -165,6 +176,22 @@ export default function StockDetailsPage() {
               </div>
             </div>
 
+            <div className="mb-6 sm:mb-8">
+              <h3 className="text-white font-medium mb-3 text-base sm:text-lg">
+                Appear Status
+              </h3>
+              {stockItem?.isBlur ? (
+                <span className="text-xs font-medium px-2.5 py-0.5 rounded-full bg-yellow-500/10 text-yellow-400 border border-yellow-500/30 flex items-center gap-1 w-fit">
+                  <EyeOff className="w-3 h-3" />
+                  Blur
+                </span>
+              ) : (
+                <span className="text-xs font-medium px-2.5 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/30 flex items-center gap-1 w-fit">
+                  <Eye className="w-3 h-3" />
+                  Unblur
+                </span>
+              )}
+            </div>
             <div className="mb-6 sm:mb-8">
               <h3 className="text-white font-medium mb-3 text-base sm:text-lg">
                 Property Overview

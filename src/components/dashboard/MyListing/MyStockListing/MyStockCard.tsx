@@ -1,31 +1,10 @@
 "use client";
 import { useState } from "react";
-import { Eye, Pencil, Trash2 } from "lucide-react";
+import { Eye, EyeOff, Lock, Pencil, Trash2, Unlock } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { getImageUrl } from "@/utils/baseUrl";
 
-interface StockItem {
-  _id: string;
-  title: string;
-  description: string;
-  price: string;
-  location: string;
-  size: string;
-  images: string[];
-  category?: string;
-  features?: string[];
-  status?: string;
-  createdAt?: string;
-  owner?: {
-    _id: string;
-    name: string;
-    role: string;
-    email: string;
-    image: string;
-    status: string;
-  };
-}
 
 function formatDate(dateStr?: string) {
   if (!dateStr) return "—";
@@ -65,32 +44,29 @@ export default function MyStockCard({
   interestCount = 0,
   index = 1,
 }: {
-  item: StockItem;
+  item: any;
   canExpressInterest: boolean;
   setSelectStock: any;
   setOpenUpdateForm: any;
-  setDeleteModal?:any,
+  setDeleteModal?: any,
   viewCount?: number;
   interestCount?: number;
   index?: number;
 }) {
-  const displayImage = item.images?.[0] || "/images/placeholder-land.jpg";
-
+  const displayImage = item.images?.[0];
 
   return (
     <div className="bg-[#111111] border border-white/8 rounded-xl overflow-hidden hover:border-primary/40 transition-all duration-300 group">
       <div className="flex flex-col md:flex-row  gap-4 p-4">
-        {/* Thumbnail */}
         <Link
           href={`/user-dashboard/my-listing/stock/${item._id}`}
-          className="relative flex-shrink-0 w-full aspect-5/3  md:w-[120px] md:h-[80px] rounded-lg overflow-hidden block"
+          className="relative flex-shrink-0 w-full aspect-5/3 md:w-[120px] md:h-[80px] rounded-lg overflow-hidden block"
         >
-
           <Image
-            src={getImageUrl() + displayImage}
+            src={item.images?.length ? getImageUrl() + displayImage : "/placeholder.png"}
             alt={item.title}
             fill
-            className="object-cover group-hover:scale-105 transition-transform duration-500"
+            className={`object-cover group-hover:scale-105 transition-transform duration-500 `}
             sizes="250px"
           />
         </Link>
@@ -111,6 +87,20 @@ export default function MyStockCard({
             >
               {item.status ?? "unknown"}
             </span>
+
+            
+
+            {item?.isBlur ? (
+              <span className="text-xs font-medium px-2.5 py-0.5 rounded-full bg-yellow-500/10 text-black-400 border border-blue-500/30 flex items-center gap-1 w-fit">
+                <EyeOff className="w-3 h-3" />
+                Blur
+              </span>
+            ): (
+              <span className="text-xs font-medium px-2.5 py-0.5 rounded-full bg-blue-500/10 text-black-400 border border-yellow-500/30 flex items-center gap-1 w-fit">
+                <Eye className="w-3 h-3" />
+                Unblur
+              </span>
+            )}
           </div>
 
           {/* Description */}
@@ -176,7 +166,7 @@ export default function MyStockCard({
           </button>
 
           <button
-           onClick={() => {
+            onClick={() => {
               setSelectStock(item);
               setDeleteModal(true);
             }}
