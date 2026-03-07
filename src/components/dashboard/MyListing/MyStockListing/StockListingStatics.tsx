@@ -3,9 +3,7 @@
 import { useOwnerStockAnalyticsQuery } from "@/redux/slice/stocksApi";
 
 const StockListingStatics = () => {
-      const { data: stocksStaticData } = useOwnerStockAnalyticsQuery({});
-  console.log("stocksStaticData", stocksStaticData);
-  
+      const { data: stocksStaticData } = useOwnerStockAnalyticsQuery({});  
     return (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
             {stocksStaticData?.data && stocksStaticData?.data?.analysis?.map((data: any, i: number) =>

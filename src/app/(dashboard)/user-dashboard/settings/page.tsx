@@ -33,32 +33,11 @@ export default function Settings() {
     }));
   };
 
-  const handleSave = () => {
-    setLoading(true);
-    console.log(settings);
-    // Simulate API call
-    setTimeout(() => {
-      // localStorage.setItem("userSettings", JSON.stringify(settings));
-      setLoading(false);
-      toast.success("Settings saved successfully");
-    }, 1000);
-  };
 
-  const handleReset = () => {
-    const defaultSettings = {
-      language: "English",
-      currency: "ZAR (R)",
-      timezone: "South Africa (GMT+2)",
-    };
-    setSettings(defaultSettings);
-    // localStorage.setItem("userSettings", JSON.stringify(defaultSettings));
-    toast.success("Settings reset to defaults");
-  };
+
 
   return (
     <div className="p-8">
-
-
       <SettingPage />
     </div>
   );

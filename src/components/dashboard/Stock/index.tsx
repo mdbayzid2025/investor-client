@@ -1,10 +1,10 @@
 'use client'
-import { useGetMyStocksQuery } from '@/redux/slice/stocksApi';
+import { useGetStocksQuery } from '@/redux/slice/stocksApi';
 import { BookmarkCheck } from 'lucide-react';
 import UserStockCard from './UserStockCard';
 
 const StockPage = () => {
-    const { data: stocksData } = useGetMyStocksQuery({});
+    const { data: stocksData } = useGetStocksQuery({});
     return (
         <div className="p-4 sm:p-6 lg:p-8">
             <div className="mb-6 sm:mb-8">

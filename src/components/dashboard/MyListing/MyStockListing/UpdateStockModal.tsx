@@ -50,9 +50,6 @@ export default function UpdateStockModal({
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [existingImages, setExistingImages] = useState<string[]>([]);
 
-
-  console.log("isBlur",isBlur);
-  
   const handleClose = () => {
     setImageFiles([])
     setExistingImages([]);

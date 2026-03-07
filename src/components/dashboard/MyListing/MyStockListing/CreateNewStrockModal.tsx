@@ -115,7 +115,6 @@ export default function CreateNewStrockModal({ open, onClose }: { open: boolean,
 
     try {
       const response = await createStock(payload)?.unwrap();
-      console.log("response", response);
 
       if (response?.success) {
         toast.success(response?.message)

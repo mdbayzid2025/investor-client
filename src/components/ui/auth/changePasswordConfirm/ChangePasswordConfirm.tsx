@@ -68,9 +68,7 @@ export function ChangePasswordConfirm() {
       
       // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Mock successful change
-      console.log('Password changed successfully');
+            
       setIsSuccess(true);
       
       // Redirect to settings after 3 seconds

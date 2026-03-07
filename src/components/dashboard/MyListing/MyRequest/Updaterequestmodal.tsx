@@ -52,9 +52,6 @@ export default function UpdateRequestModal({
   });
   const [errors, setErrors] = useState<Partial<FormState>>({});
   const [updateRequest, { isLoading }] = useUpdateRequestMutation();
-  
-console.log("request update", request);
-
 
   useEffect(() => {
     if (request) {

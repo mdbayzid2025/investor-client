@@ -117,9 +117,7 @@ export default function IdentityVerificationModal({
       payload.append("data", JSON.stringify(formData));
       payload.append("image", file); 
       
-      const response = await verifyAccount(payload).unwrap();
-      console.log("response", response);
-      
+      const response = await verifyAccount(payload).unwrap();      
       toast.success(response.message || "Verification submitted successfully!");
       onClose();
     } catch (err: any) {

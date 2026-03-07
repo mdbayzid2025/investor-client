@@ -75,9 +75,6 @@ export default function ImagesUpload({
   const totalImages = (existingImages?.length ?? 0) + (files?.length ?? 0);
   const canAddMore = totalImages < maxImages;
 
-  console.log("filesfiles", files);
-  
-
   return (
     <Box>
       <Grid container spacing={2}>

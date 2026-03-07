@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ArrowLeft,
   MapPin,
@@ -23,8 +23,8 @@ import { getImageUrl } from "@/utils/baseUrl";
 
 export default function UserStockDetailsPage() {
   const { stockId } = useParams<{ stockId: string }>();
-
   const [interested, setInterested] = useState(false);
+  const [selectedImage, setSelectedImage] = useState("")
 
   // Fetch stock data using RTK Query
   const {
@@ -35,6 +35,14 @@ export default function UserStockDetailsPage() {
   } = useGetStockByIdQuery(stockId, {
     skip: !stockId, // prevent query if no ID
   });
+
+
+  useEffect(() => {
+    if (stockItem?.images?.length) {
+      setSelectedImage(stockItem?.images?.[0])
+    }
+  }, [stockItem])
+
 
   // ─── Loading state ───────────────────────────────────────
   if (isLoading) {
@@ -92,7 +100,7 @@ export default function UserStockDetailsPage() {
               {/* Main image */}
               <div className="absolute inset-0 bg-black/10 z-10" />
               <Image
-                src={stockItem?.images?.[0] ? getImageUrl() + stockItem?.images?.[0] : "/placeholder.png"}
+                src={selectedImage ? getImageUrl() + selectedImage : "/placeholder.png"}
                 alt={stockItem.title}
                 fill
                 className={`object-cover ${stockItem?.isBlur ? "blur-sm" : ""}`}
@@ -112,6 +120,7 @@ export default function UserStockDetailsPage() {
                 {stockItem?.images.slice(1).map((img: string, idx: number) => (
                   <div
                     key={idx}
+                    onClick={() => setSelectedImage(img)}
                     className="relative h-20 sm:h-24 rounded-lg overflow-hidden border border-white/10 group cursor-pointer bg-[#111111]"
                   >
                     <Image
@@ -119,13 +128,13 @@ export default function UserStockDetailsPage() {
                       alt={`Gallery ${idx + 1}`}
                       fill
                       className={`object-cover transition-all ${stockItem?.isBlur
-                          ? "blur-[2px] group-hover:blur-sm"
-                          : "blur-0 group-hover:scale-105"
+                        ? "blur-[2px] group-hover:blur-sm"
+                        : "blur-0 group-hover:scale-105"
                         }`}
                     />
                     <div className={`absolute inset-0 transition-colors ${stockItem?.isBlur
-                        ? "bg-black/40 group-hover:bg-black/20"
-                        : "bg-black/10 group-hover:bg-black/0"
+                      ? "bg-black/40 group-hover:bg-black/20"
+                      : "bg-black/10 group-hover:bg-black/0"
                       }`} />
                   </div>
                 ))}

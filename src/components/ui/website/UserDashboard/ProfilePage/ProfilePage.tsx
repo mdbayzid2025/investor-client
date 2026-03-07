@@ -43,9 +43,6 @@ export default function ProfilePage({ profile }: any) {
     companyName: "",
   });
 
-
-  console.log("profile", profile);
-
   // Load initial profile data
   useEffect(() => {
     if (!profile) return;

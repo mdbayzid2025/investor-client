@@ -75,7 +75,7 @@ export function NewPasswordForm() {
 
 
   return (
-    <div className="flex items-center justify-center h-screen">
+    <div className="flex items-center justify-center h-screen ">
       <div className="w-full max-w-md ">
         <div className="text-center mb-8">
           {/* <Logo className="justify-center mb-8" /> */}
