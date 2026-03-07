@@ -44,8 +44,7 @@ useEffect(()=>{
       }
       const response = await login(data)?.unwrap();
       if (response?.success) {
-        toast.success(response?.message);
-        console.log("Login", response?.data);
+        toast.success(response?.message);        
         Cookies.set("accessToken", response?.data?.accessToken)
         router.replace('/user-dashboard');
       };
