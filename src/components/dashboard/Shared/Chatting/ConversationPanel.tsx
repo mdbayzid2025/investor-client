@@ -71,29 +71,17 @@ function ConversationPanel({
         profileIdRef.current = profileData?._id;
     }, [profileData?._id]);
 
+
+    console.log("data", data?.messages);
     // ─── Handle incoming page data ────────────────────────────────────
     useEffect(() => {
         if (!data?.messages || !profileIdRef.current) return;
 
-        const enriched = data.messages.map((msg: any) => ({
-            ...msg,
-            isMine: msg.senderId === profileIdRef.current,
-        }));
-
-
-        setMessages(prev => page === 1 ? enriched : [...prev, ...enriched])
-
-        // if (isInitialLoad.current) {
-        //     setMessages(enriched);
-        //     isInitialLoad.current = false;
-        // } else {
-        //     // Subsequent pages: prepend older messages, de-duplicate by _id
-        //     setMessages((prev) => {
-        //         const existingIds = new Set(prev.map((m) => m._id));
-        //         const newOnes = enriched.filter((m: any) => !existingIds.has(m._id));
-        //         return [...newOnes, ...prev];
-        //     });
-        // }
+      
+        setMessages(prev => {
+            if (page === 1) return data?.messages;                        
+            return [...prev, ...data?.messages];
+        });
 
         const pagination = data?.pagination;
         setHasMore(pagination ? pagination.page < pagination.totalPages : false);
@@ -143,27 +131,6 @@ function ConversationPanel({
     }, [hasMore, isFetchingMore]);
 
     // ─── Join AFTER authentication ────────────────────────────────────
-    useEffect(() => {
-        if (!data?.messages || !profileIdRef.current) return;
-
-        const enriched = data.messages.map((msg: any) => ({
-            ...msg,
-            isMine: msg.senderId === profileIdRef.current,
-        }));
-
-        setMessages(prev => {
-            if (page === 1) return enriched;
-
-            const existingIds = new Set(prev.map(m => m._id));
-            const newMessages = enriched.filter((m: any) => !existingIds.has(m._id));
-
-            return [...newMessages, ...prev];
-        });
-        const pagination = data?.pagination;
-        setHasMore(pagination ? pagination.page < pagination.totalPages : false);
-        setIsFetchingMore(false);
-
-    }, [data?.messages, page]);
 
 
     // ─── Listen for incoming messages + all server socket events ─────
@@ -320,8 +287,28 @@ function ConversationPanel({
             } finally {
                 setLoading(false);
             }
+        }
+        else {
+            setLoading(true);
+            const payload = new FormData();
+            payload.append("data", JSON.stringify({ content: message }));
+            try {
+                const response = await sendMessage({
+                    id: conversationId,
+                    payload,
+                })?.unwrap();
+                if (response?.success) {
+                    setMessage("");
+                    setLoading(true);
+                }
+            } catch (error: any) {
+                toast.error(error?.data?.message);
+            } finally {
+                setLoading(false);
+            }
             return;
         }
+
 
         // Text → socket
         if (!socket) {
@@ -334,11 +321,16 @@ function ConversationPanel({
             return;
         }
 
-
-        setMessage("");
-
         const trimmed = message.trim();
         if (!trimmed && !imageFiles.length) return;
+        socket.emit(SOCKET_EVENTS.SEND_MESSAGE, {
+            conversationId,
+            content: trimmed,
+        });
+
+
+
+
 
         // // ✅ Optimistic message: show immediately, replaced on MESSAGE_SENT or removed on WARNING/ERROR
         // const optimisticMsg = {
@@ -354,10 +346,7 @@ function ConversationPanel({
         // };
         // setMessages((prev) => [...prev, optimisticMsg]);
 
-        socket.emit(SOCKET_EVENTS.SEND_MESSAGE, {
-            conversationId,
-            content: trimmed,
-        });
+
     };
 
     const handleOnChange = (e: any) => {
