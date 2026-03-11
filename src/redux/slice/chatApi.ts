@@ -21,27 +21,27 @@ export const chatApi = baseApi.injectEndpoints({
     }),
 
     // 2️⃣ Get messages by chatId
-    getMessages: build.query<any, string>({
-      query: (chatId) => ({
-        url: `/messages/${chatId}`,
-        method: "GET",        
-      }),   
-      transformResponse: (res:any)=> res?.data,
+    getMessages: build.query<any, { chatId: string; page: number; limit: number }>({
+      query: ({ chatId, page, limit }) => ({
+        url: `/messages/${chatId}?page=${page}&limit=${limit}`,
+        method: "GET",
+      }),
+      transformResponse: (res: any) => res?.data,
       providesTags: ["messages"]
     }),
 
     // 3️⃣ Send message
     sendMessage: build.mutation({
-      query: ({id, payload}) => ({
+      query: ({ id, payload }) => ({
         url: `/messages/${id}`,
         method: "POST",
         body: payload,
         headers: {
-            "Authorization" : `Bearer ${Cookies?.get("accessToken")}`
+          "Authorization": `Bearer ${Cookies?.get("accessToken")}`
         },
       }),
       // providesTags: ["messages", "chat"]
-       invalidatesTags: ["messages", "chat"],
+      invalidatesTags: ["messages", "chat"],
     }),
 
     // 4️⃣ Create new chat
