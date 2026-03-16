@@ -14,6 +14,8 @@ import {
   FileText,
   Package,
   CreditCard,
+  MessageCircleMore,
+  GitPullRequestArrow,
 } from "lucide-react";
 import Cookies from "js-cookie";
 import Image from "next/image";
@@ -30,7 +32,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { name: "Dashboard", href: "/user-dashboard", icon: LayoutDashboard },
-  { name: "My Listing", href: "/user-dashboard/my-listing", icon: FileText },
+  { name: "My Listing", href: "/user-dashboard/my-listing", icon: GitPullRequestArrow },
   { name: "Requests", href: "/user-dashboard/requests", icon: FileText },
   { name: "Stock", href: "/user-dashboard/stock", icon: Package },
   {
@@ -39,8 +41,8 @@ const navItems: NavItem[] = [
     icon: CreditCard,
   },
   { name: "Profile", href: "/user-dashboard/profile", icon: User },
+  { name: "Feedback", href: "/user-dashboard/feedback", icon: MessageCircleMore },
   { name: "Settings", href: "/user-dashboard/settings", icon: Settings },
-  { name: "Feedback", href: "/user-dashboard/feedback", icon: Settings },
   // {
   //   name: "Help & Support",
   //   href: "/user-dashboard/help-and-support",

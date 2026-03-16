@@ -5,7 +5,7 @@ const feedbackApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
     getFeedbacks: build.query({
       query: () => ({
-        url: `/feedbacks`,
+        url: `/feedback/user`,
         method: "GET",
       }),
       providesTags: ["feedback"],
@@ -13,7 +13,7 @@ const feedbackApi = baseApi.injectEndpoints({
 
     getFeedbackById: build.query({
       query: (id: string) => ({
-        url: `/feedbacks/${id}`,
+        url: `/feedback/${id}`,
         method: "GET",
       }),
       providesTags: ["feedback"],
@@ -31,19 +31,16 @@ const feedbackApi = baseApi.injectEndpoints({
 
     updateFeedback: build.mutation({
       query: (data) => ({
-        url: `/feedbacks/update/${data?.id}`,
-        method: "PATCH",
-        body: data,
-        headers: {
-          Authorization: `Bearer ${Cookies.get("accessToken")}`,
-        },
+        url: `/feedback/update/${data?.id}`,
+        method: "PUT",
+        body: data,       
       }),
       invalidatesTags: ["feedback"],
     }),
 
     deleteFeedback: build.mutation({
       query: (id: string) => ({
-        url: `/feedbacks/delete/${id}`,
+        url: `/feedback/delete/${id}`,
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${Cookies.get("accessToken")}`,
